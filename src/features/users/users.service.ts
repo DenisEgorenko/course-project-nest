@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -39,6 +39,10 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
+    const user = await this.userModel.find({ id });
+    if (!user.length) {
+      throw new NotFoundException('no such user');
+    }
     const deletedUser = await this.userModel
       .deleteOne({ 'accountData.id': id })
       .exec();

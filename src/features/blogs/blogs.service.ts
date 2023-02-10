@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateBlogDto } from './dto/createBlog.dto';
@@ -34,7 +38,7 @@ export class BlogsService {
 
   async getBlogById(id: string) {
     const blog: BlogDocument[] = await this.blogModel.find({ id });
-    if (blog) {
+    if (blog.length) {
       return {
         id: blog[0].id,
         name: blog[0].name,
@@ -42,6 +46,8 @@ export class BlogsService {
         websiteUrl: blog[0].websiteUrl,
         createdAt: blog[0].createdAt,
       };
+    } else {
+      throw new NotFoundException('no such blog');
     }
   }
 
@@ -55,10 +61,17 @@ export class BlogsService {
       blog.websiteUrl = updateBlogDto.websiteUrl;
 
       await blog.save();
+    } else {
+      throw new NotFoundException('no such blog');
     }
   }
 
   async deleteBlog(id: string) {
+    const blogs: BlogDocument[] = await this.blogModel.find({ id });
+
+    if (!blogs.length) {
+      throw new NotFoundException('no such blog');
+    }
     const deletedBlog = await this.blogModel.deleteOne({ id });
 
     return deletedBlog;

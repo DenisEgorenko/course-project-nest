@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { Model } from 'mongoose';
@@ -51,6 +51,8 @@ export class PostsService {
     const posts: PostDocument[] = await this.postModel.find({ id });
     if (posts.length) {
       return postToOutputModel(posts[0], userId);
+    } else {
+      throw new NotFoundException('no such post');
     }
   }
 
@@ -64,10 +66,16 @@ export class PostsService {
       post.blogId = updatePostDto.blogId;
 
       await post.save();
+    } else {
+      throw new NotFoundException('no such post');
     }
   }
 
   async deletePost(id: string) {
+    const post = await this.postModel.find({ id });
+    if (!post.length) {
+      throw new NotFoundException('no such post');
+    }
     const deletedPost = await this.postModel.deleteOne({ id });
     return deletedPost;
   }
