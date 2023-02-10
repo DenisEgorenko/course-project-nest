@@ -39,7 +39,8 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.userModel.find({ id });
+    const user = await this.userModel.find({ 'accountData.id': id });
+    console.log(user);
     if (!user.length) {
       throw new NotFoundException('no such user');
     }

@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument, PostStatics } from './schema/post.schema';
 import { postsQueryModel } from './models/postsQueryModel';
 import { LikesModel } from '../likes/likesModel';
+import { Blog, BlogDocument } from '../features/blogs/schema/blogs.schema';
 
 @Injectable()
 export class PostsQueryRepository {
   constructor(
     @InjectModel(Post.name)
     protected postModel: Model<PostDocument> & PostStatics,
+
+    @InjectModel(Blog.name)
+    protected blogModel: Model<BlogDocument>,
   ) {}
   async getAllPosts(query: postsQueryModel, userId: string) {
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';
@@ -46,6 +50,12 @@ export class PostsQueryRepository {
     query: postsQueryModel,
     userId: string,
   ) {
+    const blog: BlogDocument[] = await this.blogModel.find({ id: blogId });
+    console.log(blogId);
+    if (!blog.length) {
+      throw new NotFoundException('no such blog');
+    }
+
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';
     const sortDirection: Sort = query.sortDirection === 'asc' ? 1 : -1;
     const sort = { [sortBy]: sortDirection };
