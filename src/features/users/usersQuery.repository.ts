@@ -32,7 +32,9 @@ export class UsersQueryRepository {
 
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';
     const sortDirection: Sort = query.sortDirection === 'asc' ? 1 : -1;
-    const sort = { [sortBy]: sortDirection };
+    const sort = { ['accountData.' + sortBy]: sortDirection };
+
+    console.log(sort);
 
     const pageSize: number = query.pageSize ? +query.pageSize : 10;
     const pageNumber: number = query.pageNumber ? +query.pageNumber : 1;
