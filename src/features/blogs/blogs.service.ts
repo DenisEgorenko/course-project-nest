@@ -23,9 +23,12 @@ export class BlogsService {
     await newBlog.save();
 
     return {
+      id: newBlog.id,
       name: newBlog.name,
       description: newBlog.description,
       websiteUrl: newBlog.websiteUrl,
+      createdAt: newBlog.createdAt,
+      isMembership: false,
     };
   }
 
