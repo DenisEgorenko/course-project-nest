@@ -1,13 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateBlogDto } from './dto/createBlog.dto';
 import { UpdateBlogDto } from './dto/updateBlog.dto';
 import { Blog, BlogDocument, BlogStatics } from './schema/blogs.schema';
+import { blogToOutputModel } from './models/blogsToViewModel';
 
 @Injectable()
 export class BlogsService {
@@ -26,26 +23,13 @@ export class BlogsService {
 
     await newBlog.save();
 
-    return {
-      id: newBlog.id,
-      name: newBlog.name,
-      description: newBlog.description,
-      websiteUrl: newBlog.websiteUrl,
-      createdAt: newBlog.createdAt,
-      isMembership: false,
-    };
+    return blogToOutputModel(newBlog);
   }
 
   async getBlogById(id: string) {
     const blog: BlogDocument[] = await this.blogModel.find({ id });
     if (blog.length) {
-      return {
-        id: blog[0].id,
-        name: blog[0].name,
-        description: blog[0].description,
-        websiteUrl: blog[0].websiteUrl,
-        createdAt: blog[0].createdAt,
-      };
+      return blogToOutputModel(blog[0]);
     } else {
       throw new NotFoundException('no such blog');
     }
