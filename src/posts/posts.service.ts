@@ -6,7 +6,11 @@ import { Post, PostDocument, PostStatics } from './schema/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { of } from 'rxjs';
 import { postToOutputModel } from './postsQuery.repository';
-import { BlogDocument } from '../features/blogs/schema/blogs.schema';
+import {
+  Blog,
+  BlogDocument,
+  BlogStatics,
+} from '../features/blogs/schema/blogs.schema';
 import { CreatePostBlogDto } from './dto/createPostBlog.dto';
 
 @Injectable()
@@ -14,6 +18,9 @@ export class PostsService {
   constructor(
     @InjectModel(Post.name)
     protected postModel: Model<PostDocument> & PostStatics,
+
+    @InjectModel(Blog.name)
+    protected blogModel: Model<BlogDocument> & BlogStatics,
   ) {}
   async createPost(createPostDto: CreatePostDto, userId: string) {
     const newPost = await this.postModel.createPost(
@@ -34,6 +41,12 @@ export class PostsService {
     blogId: string,
     userId: string,
   ) {
+    const blogs: BlogDocument[] = await this.blogModel.find({ id: blogId });
+
+    if (!blogs.length) {
+      throw new NotFoundException('no such blog');
+    }
+
     const newPost = await this.postModel.createPost(
       createPostBlogDto.title,
       createPostBlogDto.shortDescription,
