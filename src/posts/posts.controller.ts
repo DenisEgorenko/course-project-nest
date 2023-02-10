@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   Put,
+  HttpCode,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/createPost.dto';
@@ -46,11 +47,13 @@ export class PostsController {
   }
 
   @Put(':id')
+  @HttpCode(204)
   updatePost(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.updatePost(id, updatePostDto);
   }
 
   @Delete(':id')
+  @HttpCode(204)
   deletePost(@Param('id') id: string) {
     return this.postsService.deletePost(id);
   }
