@@ -1,16 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { CreateBlogDto } from './dto/createBlog.dto';
 import { UpdateBlogDto } from './dto/updateBlog.dto';
-import { Blog, BlogDocument, BlogStatics } from './schema/blogs.schema';
+import { Blog, BlogDocument, BlogModel } from './schema/blogs.schema';
 import { blogToOutputModel } from './models/blogsToViewModel';
 
 @Injectable()
 export class BlogsService {
   constructor(
     @InjectModel(Blog.name)
-    protected blogModel: Model<BlogDocument> & BlogStatics,
+    protected blogModel: BlogModel,
   ) {}
 
   async createBlog(createBlogDto: CreateBlogDto) {
@@ -40,9 +39,9 @@ export class BlogsService {
     if (blogs.length) {
       const blog = blogs[0];
 
-      blog.name = updateBlogDto.name;
-      blog.description = updateBlogDto.description;
-      blog.websiteUrl = updateBlogDto.websiteUrl;
+      blog.setName(updateBlogDto.name);
+      blog.setDescription(updateBlogDto.description);
+      blog.setWebsiteUrl(updateBlogDto.websiteUrl);
 
       await blog.save();
     } else {

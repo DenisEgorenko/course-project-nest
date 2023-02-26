@@ -4,7 +4,7 @@ import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentDocument } from './schema/comments.schema';
 import { commentsQueryModel } from './models/commentsQueryModel';
-import { LikesModel } from '../../likes/likesModel';
+import { LikesModel } from '../likes/models/likesModel';
 
 @Injectable()
 export class CommentsQueryRepository {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post } from '../../posts/schema/post.schema';
+import { Post } from '../posts/schema/post.schema';
 import { CommentDocument } from './schema/comments.schema';
 import { commentToOutputModel } from './commentsQuery.repository';
 

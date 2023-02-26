@@ -14,11 +14,11 @@ import { BlogsService } from './blogs.service';
 import { BlogsQueryRepository } from './blogsQuery.repository';
 import { blogsQueryModel } from './models/blogsQueryModel';
 import { UpdateBlogDto } from './dto/updateBlog.dto';
-import { PostsQueryRepository } from '../../posts/postsQuery.repository';
-import { postsQueryModel } from '../../posts/models/postsQueryModel';
-import { CreatePostDto } from '../../posts/dto/createPost.dto';
-import { PostsService } from '../../posts/posts.service';
-import { CreatePostBlogDto } from '../../posts/dto/createPostBlog.dto';
+import { PostsQueryRepository } from '../posts/postsQuery.repository';
+import { postsQueryModel } from '../posts/models/postsQueryModel';
+import { CreatePostDto } from '../posts/dto/createPost.dto';
+import { PostsService } from '../posts/posts.service';
+import { CreatePostBlogDto } from '../posts/dto/createPostBlog.dto';
 
 @Controller('blogs')
 export class BlogsController {

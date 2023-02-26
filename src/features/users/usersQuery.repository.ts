@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserStatics } from './schema/user.schema';
+import { usersToOutputModel } from './models/usersToViewModel';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -59,39 +60,3 @@ export class UsersQueryRepository {
     );
   }
 }
-
-export const usersToOutputModel = (
-  pagesCount: number,
-  page: number,
-  pageSize: number,
-  totalCount: number,
-  items: UserDocument[],
-): usersOutputModel => {
-  return {
-    pagesCount: pagesCount,
-    page: page,
-    pageSize: pageSize,
-    totalCount: totalCount,
-    items: items.map((user) => ({
-      id: user.accountData.id,
-      login: user.accountData.login,
-      email: user.accountData.email,
-      createdAt: user.accountData.createdAt,
-    })),
-  };
-};
-
-export type userOutputModel = {
-  id: string;
-  login: string;
-  email: string;
-  createdAt: Date;
-};
-
-export type usersOutputModel = {
-  pagesCount: number;
-  page: number;
-  pageSize: number;
-  totalCount: number;
-  items: userOutputModel[];
-};

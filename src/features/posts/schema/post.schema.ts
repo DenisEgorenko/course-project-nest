@@ -1,9 +1,23 @@
 import { HydratedDocument, Model } from 'mongoose';
-import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { CreatePostDto } from '../dto/createPost.dto';
 
+/// Types
 export type PostDocument = HydratedDocument<Post>;
+
+export type PostStatics = {
+  createPost: (
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string,
+    blogModel: Model<PostDocument> & PostStatics,
+  ) => PostDocument;
+};
+
+export type PostModel = Model<PostDocument> & PostStatics;
+
+/// Schema
 @Schema({ _id: false })
 export class NewestLikes {
   @Prop({ required: true })
@@ -41,26 +55,40 @@ export class Post {
   createdAt: Date;
   @Prop({ required: true, type: ExtendedLikesInfo })
   extendedLikesInfo: ExtendedLikesInfo;
-}
 
-export type PostStatics = {
-  createPost: (
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-    blogModel: Model<PostDocument> & PostStatics,
-  ) => PostDocument;
-};
+  setTitle(title: string) {
+    this.title = title;
+  }
+
+  setShortDescription(shortDescription: string) {
+    this.shortDescription = shortDescription;
+  }
+
+  setContent(content: string) {
+    this.content = content;
+  }
+
+  setBlogId(blogId: string) {
+    this.blogId = blogId;
+  }
+}
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
+/// Methods
+
+PostSchema.methods.setTitle = Post.prototype.setTitle;
+PostSchema.methods.setShortDescription = Post.prototype.setShortDescription;
+PostSchema.methods.setContent = Post.prototype.setContent;
+PostSchema.methods.setBlogId = Post.prototype.setBlogId;
+
+/// Statics
 PostSchema.statics.createPost = (
   title: string,
   shortDescription: string,
   content: string,
   blogId: string,
-  postModel: Model<PostDocument> & PostStatics,
+  postModel: PostModel,
 ): PostDocument => {
   return new postModel({
     id: uuidv4(),

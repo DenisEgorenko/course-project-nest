@@ -15,8 +15,8 @@ import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { PostsQueryRepository } from './postsQuery.repository';
 import { postsQueryModel } from './models/postsQueryModel';
-import { commentsQueryModel } from '../features/comments/models/commentsQueryModel';
-import { CommentsQueryRepository } from '../features/comments/commentsQuery.repository';
+import { commentsQueryModel } from '../comments/models/commentsQueryModel';
+import { CommentsQueryRepository } from '../comments/commentsQuery.repository';
 
 @Controller('posts')
 export class PostsController {
@@ -42,8 +42,8 @@ export class PostsController {
   }
 
   @Get(':id')
-  findPostById(@Param('id') id: string) {
-    return this.postsService.findPostById(id, '');
+  getPostById(@Param('id') id: string) {
+    return this.postsService.getPostById(id, '');
   }
 
   @Put(':id')

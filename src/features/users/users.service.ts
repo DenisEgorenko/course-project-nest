@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/createUser.dto';
 import { PasswordService } from '../../application/password.service';
-import { User, UserDocument, UserStatics } from './schema/user.schema';
+import { User, UserModel } from './schema/user.schema';
+import { userToOutputModel } from './models/usersToViewModel';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
-    protected userModel: Model<UserDocument> & UserStatics,
+    protected userModel: UserModel,
     protected passwordService: PasswordService,
   ) {}
 
@@ -28,14 +28,9 @@ export class UsersService {
       this.userModel,
     );
 
-    await newUser.save();
+    const createdUser = await newUser.save();
 
-    return {
-      id: newUser.accountData.id,
-      login: newUser.accountData.login,
-      email: newUser.accountData.email,
-      createdAt: newUser.accountData.createdAt,
-    };
+    return userToOutputModel(createdUser);
   }
 
   async deleteUser(id: string) {

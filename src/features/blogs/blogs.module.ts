@@ -3,8 +3,8 @@ import { DataBaseModule } from '../../db/db.module';
 import { BlogsController } from './blogs.controller';
 import { BlogsService } from './blogs.service';
 import { BlogsQueryRepository } from './blogsQuery.repository';
-import { PostsQueryRepository } from '../../posts/postsQuery.repository';
-import { PostsService } from '../../posts/posts.service';
+import { PostsQueryRepository } from '../posts/postsQuery.repository';
+import { PostsService } from '../posts/posts.service';
 
 @Module({
   imports: [DataBaseModule],

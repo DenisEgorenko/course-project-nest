@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as dotenv from 'dotenv';
 import { User, UserSchema } from '../features/users/schema/user.schema';
 import { Blog, BlogSchema } from '../features/blogs/schema/blogs.schema';
-import { Post, PostSchema } from '../posts/schema/post.schema';
+import { Post, PostSchema } from '../features/posts/schema/post.schema';
 import {
   Comment,
   CommentSchema,
