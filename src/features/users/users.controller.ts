@@ -53,7 +53,7 @@ export class UsersController {
       ]);
     }
     const newUser = await this.usersService.createUser(createUserDto);
-    return addUserToOutputModel(newUser);
+    return userToOutputModel(newUser);
   }
 
   @Delete(':id')
