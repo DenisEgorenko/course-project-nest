@@ -2,11 +2,11 @@ import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class usersQueryModel {
   @IsOptional()
-  @IsNumber()
-  pageNumber: number;
+  @IsString()
+  pageNumber: string;
   @IsOptional()
-  @IsNumber()
-  pageSize: number;
+  @IsString()
+  pageSize: string;
   @IsOptional()
   @IsString()
   sortBy: string;
