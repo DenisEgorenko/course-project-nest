@@ -149,15 +149,24 @@ export class AuthController {
       registerUserDto.login,
     );
 
+    if (userLogin) {
+      throw new BadRequestException([
+        {
+          message: 'User with such login already exist',
+          field: 'login',
+        },
+      ]);
+    }
+
     const userEmail = await this.usersService.findUserByLoginOrEmail(
       registerUserDto.email,
     );
 
-    if (userLogin || userEmail) {
+    if (userEmail) {
       throw new BadRequestException([
         {
-          message: 'User with such login or email already exist',
-          field: 'login',
+          message: 'User with such email already exist',
+          field: 'email',
         },
       ]);
     }
