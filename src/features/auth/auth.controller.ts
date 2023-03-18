@@ -38,6 +38,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(ThrottlerGuard, LocalAuthGuard)
+  @HttpCode(HttpStatus.OK)
   async login(@Request() req, @Res({ passthrough: true }) response: Response) {
     const accessInfo = await this.authService.login(
       req.user,
@@ -142,6 +143,7 @@ export class AuthController {
   // Registration
   @Post('registration')
   @UseGuards(ThrottlerGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() registerUserDto: RegisterUserDto) {
     const userLogin = await this.usersService.findUserByLoginOrEmail(
       registerUserDto.login,
@@ -179,6 +181,11 @@ export class AuthController {
         { message: 'Recovery confirmation code is expired', field: 'code' },
       ]);
     }
+
+    if (user.emailConfirmation.isConfirmed) {
+      throw new BadRequestException('email already confirmed');
+    }
+
     await this.usersService.confirmUserEmail(user);
   }
 
