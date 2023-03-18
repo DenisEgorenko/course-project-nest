@@ -1,7 +1,6 @@
 import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { add } from 'date-fns';
 
 /// Types
 
@@ -13,6 +12,8 @@ export type UserStatics = {
     email: string,
     passwordHash: string,
     passwordSalt: string,
+    emailConfirmationCode: string,
+    emailConfirmationExpirationDate: Date,
     userModel: Model<UserDocument> & UserStatics,
   ) => UserDocument;
 };
@@ -40,9 +41,9 @@ class AccountData {
 }
 @Schema({ _id: false })
 class EmailConfirmation {
-  @Prop({ required: true })
+  @Prop()
   confirmationCode: string;
-  @Prop({ required: true })
+  @Prop()
   expirationDate: Date;
   @Prop({ required: true })
   isConfirmed: boolean;
@@ -65,11 +66,52 @@ export class User {
 
   @Prop({ required: true })
   passwordRecovery: PasswordRecovery;
+
+  setRefreshToken(refreshToken: string) {
+    this.accountData.refreshToken = refreshToken;
+  }
+
+  setRecoveryCode(recoveryCode: string) {
+    this.passwordRecovery.recoveryCode = recoveryCode;
+  }
+
+  setExpirationDate(expirationDate: Date) {
+    this.passwordRecovery.expirationDate = expirationDate;
+  }
+
+  setUserPassword(password: string) {
+    this.accountData.password = password;
+  }
+
+  setPasswordSalt(salt: string) {
+    this.accountData.salt = salt;
+  }
+
+  setConfirmationCode(code: string | null) {
+    this.emailConfirmation.confirmationCode = code;
+  }
+
+  setConfirmationCodeExpDate(date: Date | null) {
+    this.emailConfirmation.expirationDate = date;
+  }
+
+  setIsConfirmed(status: boolean) {
+    this.emailConfirmation.isConfirmed = status;
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
 /// Methods
+UserSchema.methods.setRefreshToken = User.prototype.setRefreshToken;
+UserSchema.methods.setRecoveryCode = User.prototype.setRecoveryCode;
+UserSchema.methods.setExpirationDate = User.prototype.setExpirationDate;
+UserSchema.methods.setUserPassword = User.prototype.setUserPassword;
+UserSchema.methods.setPasswordSalt = User.prototype.setPasswordSalt;
+UserSchema.methods.setConfirmationCode = User.prototype.setConfirmationCode;
+UserSchema.methods.setConfirmationCodeExpDate =
+  User.prototype.setConfirmationCodeExpDate;
+UserSchema.methods.setIsConfirmed = User.prototype.setIsConfirmed;
 
 /// Statics
 
@@ -78,6 +120,8 @@ UserSchema.statics.createUser = (
   email: string,
   passwordHash: string,
   passwordSalt: string,
+  emailConfirmationCode: string,
+  emailConfirmationExpirationDate: Date,
   userModel: UserModel,
 ): UserDocument => {
   return new userModel({
@@ -91,10 +135,8 @@ UserSchema.statics.createUser = (
       createdAt: new Date(),
     },
     emailConfirmation: {
-      confirmationCode: uuidv4(),
-      expirationDate: add(new Date(), {
-        hours: 1,
-      }),
+      confirmationCode: emailConfirmationCode,
+      expirationDate: emailConfirmationExpirationDate,
       isConfirmed: false,
     },
     passwordRecovery: {

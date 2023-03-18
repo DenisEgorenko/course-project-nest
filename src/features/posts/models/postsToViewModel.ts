@@ -1,5 +1,5 @@
 import { PostDocument } from '../schema/post.schema';
-import { LikesModel } from '../../likes/models/likesModel';
+import { LikesModel } from '../../../common/models/likesModel';
 
 export const postsToOutputModel = (
   pagesCount: number,

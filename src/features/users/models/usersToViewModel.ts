@@ -25,8 +25,24 @@ export const userToOutputModel = (user: UserDocument): userOutputModel => {
   };
 };
 
+export const addUserToOutputModel = (
+  user: UserDocument,
+): addUserOutputModel => {
+  return {
+    login: user.accountData.login,
+    email: user.accountData.email,
+    createdAt: user.accountData.createdAt,
+  };
+};
+
 export type userOutputModel = {
   id: string;
+  login: string;
+  email: string;
+  createdAt: Date;
+};
+
+export type addUserOutputModel = {
   login: string;
   email: string;
   createdAt: Date;

@@ -1,7 +1,25 @@
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { CreateCommentDto } from '../dto/createComment.dto';
+import { v4 as uuidv4 } from 'uuid';
+
+/// Types
 
 export type CommentDocument = HydratedDocument<Comment>;
+
+export type CommentStatics = {
+  createComment: (
+    createCommentDto: CreateCommentDto,
+    userId: string,
+    userLogin: string,
+    postId: string,
+    commentModel: Model<CommentDocument>,
+  ) => CommentDocument;
+};
+export type CommentModel = Model<CommentDocument> & CommentStatics;
+
+/// Schema
+
 @Schema({ _id: false })
 export class LikesInfo {
   @Prop({ required: true })
@@ -27,31 +45,29 @@ export class Comment {
   likesInfo: LikesInfo;
 }
 
-// export type CommentStatics = {
-//   createPost: (
-//     createPostDto: CreatePostDto,
-//     blogModel: Model<PostDocument> & PostStatics,
-//   ) => PostDocument;
-// };
-
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
-// PostSchema.statics.createPost = (
-//   createPostDto: CreatePostDto,
-//   postModel: Model<PostDocument> & PostStatics,
-// ): PostDocument => {
-//   return new postModel({
-//     id: uuidv4(),
-//     title: createPostDto.title,
-//     shortDescription: createPostDto.shortDescription,
-//     content: createPostDto.content,
-//     blogId: createPostDto.blogId,
-//     blogName: createPostDto.blogId,
-//     createdAt: new Date(),
-//     extendedLikesInfo: {
-//       like: [],
-//       dislikes: [],
-//       newestLikes: [],
-//     },
-//   });
-// };
+/// Methods
+
+/// Statics
+
+CommentSchema.statics.createComment = (
+  createCommentDto: CreateCommentDto,
+  userId: string,
+  userLogin: string,
+  postId: string,
+  commentModel: Model<CommentDocument>,
+): CommentDocument => {
+  return new commentModel({
+    id: uuidv4(),
+    content: createCommentDto.content,
+    userId: userId,
+    postId: postId,
+    userLogin: userLogin,
+    createdAt: new Date(),
+    likesInfo: {
+      likes: [],
+      dislikes: [],
+    },
+  });
+};

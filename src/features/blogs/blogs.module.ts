@@ -5,6 +5,8 @@ import { BlogsService } from './blogs.service';
 import { BlogsQueryRepository } from './blogsQuery.repository';
 import { PostsQueryRepository } from '../posts/postsQuery.repository';
 import { PostsService } from '../posts/posts.service';
+import { BasicStrategy } from '../auth/strategies/basic.strategy';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [DataBaseModule],
@@ -14,6 +16,8 @@ import { PostsService } from '../posts/posts.service';
     PostsService,
     BlogsQueryRepository,
     PostsQueryRepository,
+    BasicStrategy,
+    JwtService,
   ],
 })
 export class BlogsModule {}

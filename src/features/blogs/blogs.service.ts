@@ -26,12 +26,7 @@ export class BlogsService {
   }
 
   async getBlogById(id: string) {
-    const blog: BlogDocument[] = await this.blogModel.find({ id });
-    if (blog.length) {
-      return blogToOutputModel(blog[0]);
-    } else {
-      throw new NotFoundException('no such blog');
-    }
+    return this.blogModel.find({ id });
   }
 
   async updateBlog(id: string, updateBlogDto: UpdateBlogDto) {

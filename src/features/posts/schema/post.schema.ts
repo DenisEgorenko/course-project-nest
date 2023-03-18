@@ -11,7 +11,7 @@ export type PostStatics = {
     shortDescription: string,
     content: string,
     blogId: string,
-    blogModel: Model<PostDocument> & PostStatics,
+    blogModel: Model<PostDocument>,
   ) => PostDocument;
 };
 
