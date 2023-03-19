@@ -75,11 +75,10 @@ export class BlogsController {
   }
 
   @Post(':id/posts')
-  @UseGuards(BasicAuthGuard, JwtRefreshAuthGuard)
+  @UseGuards(BasicAuthGuard)
   async createBlogPost(
     @Param('id') id: string,
     @Body() createPostBlogDto: CreatePostBlogDto,
-    @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
     const blog = await this.blogsService.getBlogById(id);
 
@@ -91,7 +90,7 @@ export class BlogsController {
       createPostBlogDto,
       id,
     );
-    return postToOutputModel(newPost, jwtRTPayload.user.userId);
+    return postToOutputModel(newPost, '');
   }
 
   @Put(':id')
