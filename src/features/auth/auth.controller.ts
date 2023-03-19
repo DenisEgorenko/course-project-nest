@@ -29,7 +29,7 @@ import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
-@SkipThrottle()
+// @SkipThrottle()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

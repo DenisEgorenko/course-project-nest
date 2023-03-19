@@ -43,11 +43,11 @@ export class AuthService {
   }
 
   async createRefreshToken(payload: JwtRTPayload) {
-    return this.jwtService.sign(payload, { expiresIn: '500s' });
+    return this.jwtService.sign(payload, { expiresIn: '20s' });
   }
 
   async createAccessToken(payload: JwtATPayload) {
-    return this.jwtService.sign(payload, { expiresIn: '500s' });
+    return this.jwtService.sign(payload, { expiresIn: '10s' });
   }
 
   async login(user: UserDocument, ip: string, deviceTitle: string) {
