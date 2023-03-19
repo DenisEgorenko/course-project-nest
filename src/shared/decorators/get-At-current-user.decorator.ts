@@ -9,7 +9,7 @@ export const GetCurrentATJwtContext = createParamDecorator(
     const request = context.switchToHttp().getRequest();
     const ctx = request.user as JwtATPayload;
     if (!ctx) {
-      throw new Error('JWTGuard must be used');
+      throw new Error('AT JWTGuard must be used');
     }
 
     if (!data) {

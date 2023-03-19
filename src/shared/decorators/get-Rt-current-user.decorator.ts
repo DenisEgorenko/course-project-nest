@@ -7,7 +7,7 @@ export const GetCurrentRTJwtContext = createParamDecorator(
     const ctx = request.user as JwtRTPayload;
 
     if (!ctx) {
-      throw new Error('JWTGuard must be used');
+      throw new Error('RT JWTGuard must be used');
     }
 
     if (!data) {

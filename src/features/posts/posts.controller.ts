@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -38,8 +37,6 @@ import { BlogsService } from '../blogs/blogs.service';
 export class PostsController {
   constructor(
     protected postsService: PostsService,
-    protected blogsService: BlogsService,
-
     protected commentsService: CommentsService,
     protected postsQueryRepository: PostsQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
