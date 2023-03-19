@@ -13,7 +13,9 @@ export class JwtRefreshAuthGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = request.cookies['refreshToken'];
+    // const token = request.cookies['refreshToken'];
+
+    const token = (request.headers.authorization || '').split(' ')[1] || '';
 
     if (!token) {
       request.user = {
