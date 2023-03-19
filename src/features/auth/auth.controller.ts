@@ -56,7 +56,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuardForLikes)
+  @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
     @GetCurrentRTJwtContext() ctx: JwtRTPayload,
@@ -78,6 +78,7 @@ export class AuthController {
 
   @Post('refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
+  @HttpCode(HttpStatus.OK)
   async refreshToken(
     @GetCurrentRTJwtContext() ctx: JwtRTPayload,
     @Res({ passthrough: true }) response: Response,
