@@ -13,9 +13,10 @@ import { AuthGuardForLikes } from '../auth/guards/auth-guard-for-likes.guard';
 import { JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { SecurityService } from './security.service';
+import { JwtRefreshAuthGuard } from '../auth/guards/refresh-auth-guard.guard';
 
 @Controller('security')
-@UseGuards(AuthGuardForLikes)
+@UseGuards(JwtRefreshAuthGuard)
 export class SecurityController {
   constructor(private readonly securityService: SecurityService) {}
 
