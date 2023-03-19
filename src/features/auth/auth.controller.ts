@@ -14,7 +14,6 @@ import {
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { AuthGuardForLikes } from './guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { JwtRTPayload } from './interfaces/jwtPayload.type';
 import { SecurityService } from '../security/security.service';
@@ -25,7 +24,7 @@ import { SetNewPasswordDto } from './dto/setNewPassword.dto';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { addUserToOutputModel } from '../users/models/usersToViewModel';
 import { ResendConfirmationDto } from './dto/resendConfirmation.dto';
-import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
 import { JwtRefreshAuthGuard } from './guards/refresh-auth-guard.guard';
 
@@ -94,11 +93,11 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
-
-    if (user.accountData.refreshToken !== ctx.refreshToken) {
-      throw new UnauthorizedException();
-    }
+    // const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
+    //
+    // if (user.accountData.refreshToken !== ctx.refreshToken) {
+    //   throw new UnauthorizedException();
+    // }
 
     const accessInfo = await this.authService.generateNewTokens(
       ctx.user.userId,
