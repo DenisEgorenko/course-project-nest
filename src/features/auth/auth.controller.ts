@@ -62,6 +62,12 @@ export class AuthController {
     @GetCurrentRTJwtContext() ctx: JwtRTPayload,
     @Res({ passthrough: true }) response: Response,
   ) {
+    const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
+
+    if (user.accountData.refreshToken !== ctx.refreshToken) {
+      throw new UnauthorizedException();
+    }
+
     const rmSecuritySession = await this.securityService.removeSecuritySession(
       ctx.deviceId,
     );
