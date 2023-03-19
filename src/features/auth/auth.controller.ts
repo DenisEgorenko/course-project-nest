@@ -14,7 +14,7 @@ import {
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { AuthGuardForLikes } from './guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { JwtRTPayload } from './interfaces/jwtPayload.type';
 import { SecurityService } from '../security/security.service';
@@ -27,6 +27,7 @@ import { addUserToOutputModel } from '../users/models/usersToViewModel';
 import { ResendConfirmationDto } from './dto/resendConfirmation.dto';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
+import { JwtRefreshAuthGuard } from './guards/refresh-auth-guard.guard';
 
 @Controller('auth')
 // @SkipThrottle()
@@ -55,7 +56,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(AuthGuardForLikes)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
     @GetCurrentRTJwtContext() ctx: JwtRTPayload,
@@ -97,8 +98,8 @@ export class AuthController {
     );
 
     response.cookie('refreshToken', accessInfo.refresh_token, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: this.configService.get<boolean>('test.mode'),
+      secure: this.configService.get<boolean>('test.mode'),
     });
     return { accessToken: accessInfo.access_token };
   }

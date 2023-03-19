@@ -11,24 +11,23 @@ export class RtJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
         (req: Request) => {
           const token = req?.cookies['refreshToken'];
           if (!token) {
-            return 'false';
+            return false;
           }
           return token;
         },
       ]),
-      ignoreExpiration: true,
+      ignoreExpiration: false,
       secretOrKey: 'secret',
       passReqToCallback: true,
     });
   }
 
-  async validate(req: Request, payload: any, done) {
-    console.log(done);
+  async validate(req: Request, payload: any) {
     const refreshToken = req?.cookies['refreshToken'];
 
-    // if (!refreshToken) {
-    //   throw new ForbiddenException('Wrong Refresh Token');
-    // }
+    if (!refreshToken) {
+      throw new ForbiddenException('Wrong Refresh Token');
+    }
     return { ...payload };
   }
 }

@@ -9,13 +9,13 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
+import { AuthGuardForLikes } from '../auth/guards/auth-guard-for-likes.guard';
 import { JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { SecurityService } from './security.service';
 
 @Controller('security')
-@UseGuards(JwtRefreshAuthGuard)
+@UseGuards(AuthGuardForLikes)
 export class SecurityController {
   constructor(private readonly securityService: SecurityService) {}
 

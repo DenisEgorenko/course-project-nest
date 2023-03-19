@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 // export class JwtRefreshAuthGuard extends AuthGuard('jwt-refresh') {}
 @Injectable()
-export class JwtRefreshAuthGuard implements CanActivate {
+export class AuthGuardForLikes implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   canActivate(

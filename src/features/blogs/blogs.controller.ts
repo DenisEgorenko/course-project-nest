@@ -24,7 +24,7 @@ import { CreatePostBlogDto } from '../posts/dto/createPostBlog.dto';
 import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
 import { BlogDocument } from './schema/blogs.schema';
 import { postToOutputModel } from '../posts/models/postsToViewModel';
-import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
+import { AuthGuardForLikes } from '../auth/guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
 import { blogToOutputModel } from './models/blogsToViewModel';
@@ -55,7 +55,7 @@ export class BlogsController {
   }
 
   @Get(':id/posts')
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(AuthGuardForLikes)
   async getBlogPosts(
     @Param('id') id: string,
     @Query() query: postsQueryModel,

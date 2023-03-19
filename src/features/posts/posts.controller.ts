@@ -28,7 +28,7 @@ import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetCurrentATJwtContext } from '../../shared/decorators/get-At-current-user.decorator';
 import { JwtATPayload, JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
-import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
+import { AuthGuardForLikes } from '../auth/guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { postToOutputModel } from './models/postsToViewModel';
 import { BlogsService } from '../blogs/blogs.service';
@@ -53,7 +53,7 @@ export class PostsController {
   }
 
   @Get()
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(AuthGuardForLikes)
   getAllPosts(
     @Query() query: postsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
@@ -65,7 +65,7 @@ export class PostsController {
   }
 
   @Get(':postId')
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(AuthGuardForLikes)
   async getPostById(
     @Param('postId') postId: string,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
@@ -107,7 +107,7 @@ export class PostsController {
   // Post's comments
 
   @Get(':postId/comments')
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(AuthGuardForLikes)
   async getPostComments(
     @Param('postId') postId: string,
     @Query() query: commentsQueryModel,

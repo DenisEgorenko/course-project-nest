@@ -14,7 +14,7 @@ import { CommentsService } from './comments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetCurrentATJwtContext } from '../../shared/decorators/get-At-current-user.decorator';
 import { JwtATPayload, JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
-import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
+import { AuthGuardForLikes } from '../auth/guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { commentToOutputModel } from './commentsQuery.repository';
 import { UpdateCommentDto } from './dto/updateComment.dto';
@@ -25,7 +25,7 @@ export class CommentsController {
   constructor(protected commentsService: CommentsService) {}
 
   @Get(':commentId')
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(AuthGuardForLikes)
   async getCommentById(
     @Param('commentId') commentId: string,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
