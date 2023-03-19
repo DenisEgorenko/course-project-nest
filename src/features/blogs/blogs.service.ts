@@ -12,7 +12,7 @@ export class BlogsService {
     protected blogModel: BlogModel,
   ) {}
 
-  async createBlog(createBlogDto: CreateBlogDto) {
+  async createBlog(createBlogDto: CreateBlogDto): Promise<BlogDocument> {
     const newBlog = await this.blogModel.createBlog(
       createBlogDto.name,
       createBlogDto.description,
@@ -20,13 +20,11 @@ export class BlogsService {
       this.blogModel,
     );
 
-    await newBlog.save();
-
-    return blogToOutputModel(newBlog);
+    return await newBlog.save();
   }
 
-  async getBlogById(id: string) {
-    return this.blogModel.find({ id });
+  async getBlogById(id: string): Promise<BlogDocument> {
+    return this.blogModel.findOne({ id });
   }
 
   async updateBlog(id: string, updateBlogDto: UpdateBlogDto) {

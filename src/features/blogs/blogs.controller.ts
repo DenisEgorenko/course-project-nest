@@ -27,6 +27,7 @@ import { postToOutputModel } from '../posts/models/postsToViewModel';
 import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
+import { blogToOutputModel } from './models/blogsToViewModel';
 
 @Controller('blogs')
 export class BlogsController {
@@ -44,18 +45,27 @@ export class BlogsController {
 
   @Get(':id')
   async getBlogById(@Param('id') id: string) {
-    return await this.blogsService.getBlogById(id);
+    return blogToOutputModel(await this.blogsService.getBlogById(id));
   }
 
   @Get(':id/posts')
-  async getBlogPosts(@Param('id') id: string, @Query() query: postsQueryModel) {
-    return await this.postsQueryRepository.getAllBlogsPosts(id, query, '');
+  @UseGuards(JwtRefreshAuthGuard)
+  async getBlogPosts(
+    @Param('id') id: string,
+    @Query() query: postsQueryModel,
+    @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
+  ) {
+    return await this.postsQueryRepository.getAllBlogsPosts(
+      id,
+      query,
+      jwtRTPayload.user.userId,
+    );
   }
   @Post()
   @UseGuards(BasicAuthGuard)
   async createBlog(@Body() createBlogDto: CreateBlogDto) {
     const newBlog = await this.blogsService.createBlog(createBlogDto);
-    return newBlog;
+    return blogToOutputModel(newBlog);
   }
 
   @Post(':id/posts')
