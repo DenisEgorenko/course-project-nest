@@ -113,6 +113,12 @@ export class PostsController {
     @Query() query: commentsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
+    const post = this.postsService.getPostById(postId);
+
+    if (!post) {
+      throw new NotFoundException('no such post');
+    }
+
     return this.commentsQueryRepository.getAllPostComments(
       postId,
       query,

@@ -68,7 +68,6 @@ export class CommentsController {
     @Body() setLikeStatusDto: SetLikeStatusDto,
   ) {
     const comment = await this.commentsService.getCommentById(commentId);
-    console.log(comment);
     if (!comment) {
       throw new NotFoundException();
     }
