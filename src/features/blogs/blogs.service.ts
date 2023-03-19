@@ -27,27 +27,15 @@ export class BlogsService {
     return this.blogModel.findOne({ id });
   }
 
-  async updateBlog(id: string, updateBlogDto: UpdateBlogDto) {
-    const blogs: BlogDocument[] = await this.blogModel.find({ id });
-    if (blogs.length) {
-      const blog = blogs[0];
+  async updateBlog(blog: BlogDocument, updateBlogDto: UpdateBlogDto) {
+    blog.setName(updateBlogDto.name);
+    blog.setDescription(updateBlogDto.description);
+    blog.setWebsiteUrl(updateBlogDto.websiteUrl);
 
-      blog.setName(updateBlogDto.name);
-      blog.setDescription(updateBlogDto.description);
-      blog.setWebsiteUrl(updateBlogDto.websiteUrl);
-
-      await blog.save();
-    } else {
-      throw new NotFoundException('no such blog');
-    }
+    return await blog.save();
   }
 
   async deleteBlog(id: string) {
-    const blogs: BlogDocument[] = await this.blogModel.find({ id });
-
-    if (!blogs.length) {
-      throw new NotFoundException('no such blog');
-    }
     const deletedBlog = await this.blogModel.deleteOne({ id });
 
     return deletedBlog;

@@ -28,6 +28,7 @@ import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
 import { blogToOutputModel } from './models/blogsToViewModel';
+import { find } from 'rxjs';
 
 @Controller('blogs')
 export class BlogsController {
@@ -45,7 +46,12 @@ export class BlogsController {
 
   @Get(':id')
   async getBlogById(@Param('id') id: string) {
-    return blogToOutputModel(await this.blogsService.getBlogById(id));
+    const blog = await this.blogsService.getBlogById(id);
+
+    if (!blog) {
+      throw new NotFoundException();
+    }
+    return blogToOutputModel(blog);
   }
 
   @Get(':id/posts')
@@ -95,13 +101,25 @@ export class BlogsController {
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
   ) {
-    return this.blogsService.updateBlog(id, updateBlogDto);
+    const blog = await this.blogsService.getBlogById(id);
+
+    if (!blog) {
+      throw new NotFoundException('no such blog');
+    }
+
+    return this.blogsService.updateBlog(blog, updateBlogDto);
   }
 
   @Delete(':id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   async delete(@Param('id') id: string) {
+    const blog = await this.blogsService.getBlogById(id);
+
+    if (!blog) {
+      throw new NotFoundException('no such blog');
+    }
+
     return this.blogsService.deleteBlog(id);
   }
 }

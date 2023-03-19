@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsUrl, IsUUID } from 'class-validator';
 
 export class CreateBlogDto {
   @IsString()
@@ -6,5 +6,6 @@ export class CreateBlogDto {
   @IsString()
   description: string;
   @IsString()
+  @IsUrl()
   websiteUrl: string;
 }
