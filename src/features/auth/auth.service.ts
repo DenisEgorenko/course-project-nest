@@ -92,6 +92,12 @@ export class AuthService {
     };
   }
 
+  async logout(deviceId: string, userId: string) {
+    await this.securityService.removeSecuritySession(deviceId);
+
+    await this.usersService.updateRefreshToken(userId, null);
+  }
+
   async generateNewTokens(
     userId: string,
     login: string,

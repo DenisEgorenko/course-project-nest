@@ -68,12 +68,9 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    const rmSecuritySession = await this.securityService.removeSecuritySession(
-      ctx.deviceId,
-    );
-    if (rmSecuritySession.deletedCount >= 1) {
-      response.clearCookie('refreshToken');
-    }
+    await this.authService.logout(ctx.deviceId, ctx.user.userId);
+
+    await response.clearCookie('refreshToken');
   }
 
   @Get('me')

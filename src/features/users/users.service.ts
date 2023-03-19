@@ -77,7 +77,7 @@ export class UsersService {
 
   // update functions
 
-  async updateRefreshToken(userId: string, refreshToken: string) {
+  async updateRefreshToken(userId: string, refreshToken: string | null) {
     const users = await this.userModel.find({ 'accountData.id': userId });
 
     const user = users[0];
