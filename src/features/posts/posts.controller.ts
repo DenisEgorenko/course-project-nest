@@ -45,14 +45,11 @@ export class PostsController {
   // Post's CRUD
 
   @Post()
-  @UseGuards(BasicAuthGuard, JwtRefreshAuthGuard)
-  async createPost(
-    @Body() createPostDto: CreatePostDto,
-    @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
-  ) {
+  @UseGuards(BasicAuthGuard)
+  async createPost(@Body() createPostDto: CreatePostDto) {
     const newPost = await this.postsService.createPost(createPostDto);
 
-    return postToOutputModel(newPost, jwtRTPayload.user.userId);
+    return postToOutputModel(newPost, '');
   }
 
   @Get()

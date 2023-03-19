@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { DecodedJwtRTPayload } from '../interfaces/jwtPayload.type';
 
-@Injectable()
 // export class JwtRefreshAuthGuard extends AuthGuard('jwt-refresh') {}
+@Injectable()
 export class JwtRefreshAuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
