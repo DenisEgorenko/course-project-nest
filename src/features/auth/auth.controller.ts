@@ -91,6 +91,12 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
+    const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
+
+    if (user.accountData.refreshToken !== ctx.refreshToken) {
+      throw new UnauthorizedException();
+    }
+
     const accessInfo = await this.authService.generateNewTokens(
       ctx.user.userId,
       ctx.user.login,

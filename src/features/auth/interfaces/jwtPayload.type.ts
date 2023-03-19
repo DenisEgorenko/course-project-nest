@@ -13,6 +13,8 @@ export interface JwtRTPayload {
     email: string;
   };
   deviceId: string;
+
+  refreshToken?: string;
 }
 
 export interface DecodedJwtATPayload extends JwtATPayload {

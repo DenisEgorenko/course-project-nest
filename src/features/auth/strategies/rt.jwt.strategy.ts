@@ -28,6 +28,6 @@ export class RtJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     if (!refreshToken) {
       throw new ForbiddenException('Wrong Refresh Token');
     }
-    return { ...payload };
+    return { ...payload, refreshToken };
   }
 }
