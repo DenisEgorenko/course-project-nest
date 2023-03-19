@@ -109,6 +109,11 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
+    await this.usersService.addInvalidRefreshToken(
+      ctx.user.userId,
+      ctx.refreshToken,
+    );
+
     const accessInfo = await this.authService.generateNewTokens(
       ctx.user.userId,
       ctx.user.login,
