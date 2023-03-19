@@ -113,7 +113,7 @@ export class PostsController {
     @Query() query: commentsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
-    const post = this.postsService.getPostById(postId);
+    const post = await this.postsService.getPostById(postId);
 
     if (!post) {
       throw new NotFoundException('no such post');
@@ -133,7 +133,7 @@ export class PostsController {
     @Body() createCommentDto: CreateCommentDto,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
-    const post = this.postsService.getPostById(postId);
+    const post = await this.postsService.getPostById(postId);
 
     if (!post) {
       throw new NotFoundException('no such post');
