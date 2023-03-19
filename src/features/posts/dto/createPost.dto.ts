@@ -1,4 +1,5 @@
 import { IsString, Length } from 'class-validator';
+import { IsBlogIdExist } from '../decorators/isBlogIdExistValidation.decorator';
 
 export class CreatePostDto {
   @IsString()
@@ -11,5 +12,6 @@ export class CreatePostDto {
   @Length(0, 1000)
   content: string;
   @IsString()
+  @IsBlogIdExist({ message: 'Blog does not exist' })
   blogId: string;
 }

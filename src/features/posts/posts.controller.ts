@@ -53,16 +53,6 @@ export class PostsController {
     @Body() createPostDto: CreatePostDto,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
-    const blog = await this.blogsService.getBlogById(createPostDto.blogId);
-
-    if (!blog) {
-      throw new BadRequestException([
-        {
-          message: 'blog not found',
-          field: 'blogId',
-        },
-      ]);
-    }
     const newPost = await this.postsService.createPost(createPostDto);
 
     return postToOutputModel(newPost, jwtRTPayload.user.userId);
@@ -87,6 +77,10 @@ export class PostsController {
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
     const post = await this.postsService.getPostById(postId);
+
+    if (!Post) {
+      throw new NotFoundException();
+    }
     return postToOutputModel(post, jwtRTPayload.user.userId);
   }
 
@@ -97,17 +91,6 @@ export class PostsController {
     @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    const blog = await this.blogsService.getBlogById(updatePostDto.blogId);
-
-    if (!blog) {
-      throw new BadRequestException([
-        {
-          message: 'blog not found',
-          field: 'blogId',
-        },
-      ]);
-    }
-
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {

@@ -9,6 +9,7 @@ import { BasicStrategy } from '../auth/strategies/basic.strategy';
 import { AtJwtStrategy } from '../auth/strategies/at.jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
 import { BlogsService } from '../blogs/blogs.service';
+import { IsBlogIdExistConstraint } from './decorators/isBlogIdExistValidation.decorator';
 
 @Module({
   imports: [DataBaseModule],
@@ -22,6 +23,7 @@ import { BlogsService } from '../blogs/blogs.service';
     AtJwtStrategy,
     JwtService,
     BlogsService,
+    IsBlogIdExistConstraint,
   ],
 })
 export class PostsModule {}
