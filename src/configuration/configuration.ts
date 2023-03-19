@@ -10,4 +10,7 @@ export default () => ({
     username: process.env.BASIC_USERNAME || 'admin',
     password: process.env.BASIC_PASSWORD || 'qwerty',
   },
+  test: {
+    mode: process.env.TEST_MODE || false,
+  },
 });

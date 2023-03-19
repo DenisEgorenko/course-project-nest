@@ -26,6 +26,7 @@ import { RegisterUserDto } from './dto/registerUser.dto';
 import { addUserToOutputModel } from '../users/models/usersToViewModel';
 import { ResendConfirmationDto } from './dto/resendConfirmation.dto';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @SkipThrottle()
@@ -34,6 +35,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly securityService: SecurityService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Post('login')
@@ -46,8 +48,8 @@ export class AuthController {
       req.headers['user-agent'] || 'undefined',
     );
     response.cookie('refreshToken', accessInfo.refresh_token, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: this.configService.get<boolean>('test.mode'),
+      secure: this.configService.get<boolean>('test.mode'),
     });
     return { accessToken: accessInfo.access_token };
   }
@@ -95,8 +97,8 @@ export class AuthController {
     );
 
     response.cookie('refreshToken', accessInfo.refresh_token, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     return { accessToken: accessInfo.access_token };
   }
