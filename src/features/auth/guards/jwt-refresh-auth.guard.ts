@@ -14,9 +14,9 @@ export class JwtRefreshAuthGuard implements CanActivate {
 
     const token = (request.headers.authorization || '').split(' ')[1] || '';
 
-    console.log(token);
+    const jwt = this.jwtService.decode(token, {});
 
-    if (!token) {
+    if (!token || !jwt) {
       request.user = {
         user: {
           userId: null,
@@ -26,8 +26,6 @@ export class JwtRefreshAuthGuard implements CanActivate {
       };
       return true;
     }
-
-    const jwt = this.jwtService.decode(token, {});
 
     request.user = jwt;
     return true;

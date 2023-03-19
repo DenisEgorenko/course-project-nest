@@ -61,6 +61,12 @@ export class BlogsController {
     @Query() query: postsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
+    const blog = await this.blogsService.getBlogById(id);
+
+    if (!blog) {
+      throw new NotFoundException();
+    }
+
     return await this.postsQueryRepository.getAllBlogsPosts(
       id,
       query,
