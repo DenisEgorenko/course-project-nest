@@ -72,7 +72,7 @@ export class PostsController {
   ) {
     const post = await this.postsService.getPostById(postId);
 
-    if (!Post) {
+    if (!post) {
       throw new NotFoundException();
     }
     return postToOutputModel(post, jwtRTPayload.user.userId);
