@@ -67,6 +67,12 @@ export class AuthController {
     //   throw new UnauthorizedException();
     // }
 
+    if (
+      await this.authService.isTokenInvalid(ctx.user.userId, ctx.refreshToken)
+    ) {
+      throw new UnauthorizedException();
+    }
+
     await this.authService.logout(
       ctx.deviceId,
       ctx.user.userId,
@@ -102,11 +108,6 @@ export class AuthController {
     ) {
       throw new UnauthorizedException();
     }
-    // const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
-    //
-    // if (user.accountData.refreshToken !== ctx.refreshToken) {
-    //   throw new UnauthorizedException();
-    // }
 
     const accessInfo = await this.authService.generateNewTokens(
       ctx.user.userId,
