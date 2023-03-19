@@ -22,7 +22,7 @@ export class IsBlogIdExistConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsBlogIdExist(validationOptions?: ValidationOptions) {
+export async function IsBlogIdExist(validationOptions?: ValidationOptions) {
   return function (object: any, propertyName: string) {
     registerDecorator({
       target: object.constructor,
