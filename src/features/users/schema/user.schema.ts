@@ -35,7 +35,7 @@ class AccountData {
   @Prop({ required: true })
   salt: string;
   @Prop({ required: false })
-  refreshToken: string;
+  invalidRefreshTokens: string[];
   @Prop({ required: true })
   createdAt: Date;
 }
@@ -67,8 +67,8 @@ export class User {
   @Prop({ required: true })
   passwordRecovery: PasswordRecovery;
 
-  setRefreshToken(refreshToken: string) {
-    this.accountData.refreshToken = refreshToken;
+  addInvalidRefreshToken(refreshToken: string) {
+    this.accountData.invalidRefreshTokens.push(refreshToken);
   }
 
   setRecoveryCode(recoveryCode: string) {
@@ -103,7 +103,8 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 /// Methods
-UserSchema.methods.setRefreshToken = User.prototype.setRefreshToken;
+UserSchema.methods.addInvalidRefreshToken =
+  User.prototype.addInvalidRefreshToken;
 UserSchema.methods.setRecoveryCode = User.prototype.setRecoveryCode;
 UserSchema.methods.setExpirationDate = User.prototype.setExpirationDate;
 UserSchema.methods.setUserPassword = User.prototype.setUserPassword;

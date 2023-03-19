@@ -81,10 +81,10 @@ export class AuthService {
       deviceId,
     );
 
-    await this.usersService.updateRefreshToken(
-      user.accountData.id,
-      refreshToken,
-    );
+    // await this.usersService.updateRefreshToken(
+    //   user.accountData.id,
+    //   refreshToken,
+    // );
 
     return {
       access_token: accessToken,
@@ -92,10 +92,16 @@ export class AuthService {
     };
   }
 
-  async logout(deviceId: string, userId: string) {
+  async logout(deviceId: string, userId: string, refreshToken: string) {
     await this.securityService.removeSecuritySession(deviceId);
 
-    await this.usersService.updateRefreshToken(userId, null);
+    await this.usersService.addInvalidRefreshToken(userId, refreshToken);
+  }
+
+  async isTokenInvalid(userId: string, refreshToken: string): Promise<boolean> {
+    const user = await this.usersService.findUserByUserId(userId);
+
+    return user.accountData.invalidRefreshTokens.includes(refreshToken);
   }
 
   async generateNewTokens(
@@ -121,7 +127,7 @@ export class AuthService {
     const refreshToken = await this.createRefreshToken(RtPayload);
 
     await this.securityService.updateSecuritySessionLastActiveDate(deviceId);
-    await this.usersService.updateRefreshToken(userId, refreshToken);
+    // await this.usersService.addInvalidRefreshToken(userId, refreshToken);
 
     return {
       access_token: accessToken,

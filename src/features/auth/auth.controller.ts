@@ -63,11 +63,15 @@ export class AuthController {
   ) {
     const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
 
-    if (user.accountData.refreshToken !== ctx.refreshToken) {
-      throw new UnauthorizedException();
-    }
+    // if (user.accountData.refreshToken !== ctx.refreshToken) {
+    //   throw new UnauthorizedException();
+    // }
 
-    await this.authService.logout(ctx.deviceId, ctx.user.userId);
+    await this.authService.logout(
+      ctx.deviceId,
+      ctx.user.userId,
+      ctx.refreshToken,
+    );
 
     await response.clearCookie('refreshToken');
   }
@@ -93,6 +97,11 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
+    if (
+      await this.authService.isTokenInvalid(ctx.user.userId, ctx.refreshToken)
+    ) {
+      throw new UnauthorizedException();
+    }
     // const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
     //
     // if (user.accountData.refreshToken !== ctx.refreshToken) {

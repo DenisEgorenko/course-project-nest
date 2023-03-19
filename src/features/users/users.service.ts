@@ -61,6 +61,10 @@ export class UsersService {
     });
   }
 
+  async findUserByUserId(userId: string): Promise<UserDocument> {
+    return this.userModel.findOne({ 'accountData.id': userId });
+  }
+
   async findUserByRecoveryCode(recoveryCode: string): Promise<UserDocument> {
     return this.userModel.findOne({
       'passwordRecovery.recoveryCode': recoveryCode,
@@ -77,14 +81,18 @@ export class UsersService {
 
   // update functions
 
-  async updateRefreshToken(userId: string, refreshToken: string | null) {
+  async addInvalidRefreshToken(userId: string, refreshToken: string | null) {
     const users = await this.userModel.find({ 'accountData.id': userId });
 
     const user = users[0];
 
-    user.setRefreshToken(refreshToken);
+    user.addInvalidRefreshToken(refreshToken);
 
     await user.save();
+  }
+
+  async findInvalidUsersTokens(userId: string) {
+    return this.userModel.findOne({});
   }
 
   async updatePasswordRecoveryData(
