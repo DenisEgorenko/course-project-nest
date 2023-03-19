@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -31,11 +32,14 @@ import { JwtATPayload, JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
 import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
 import { postToOutputModel } from './models/postsToViewModel';
+import { BlogsService } from '../blogs/blogs.service';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     protected postsService: PostsService,
+    protected blogsService: BlogsService,
+
     protected commentsService: CommentsService,
     protected postsQueryRepository: PostsQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
@@ -49,6 +53,16 @@ export class PostsController {
     @Body() createPostDto: CreatePostDto,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
+    const blog = await this.blogsService.getBlogById(createPostDto.blogId);
+
+    if (!blog) {
+      throw new BadRequestException([
+        {
+          message: 'blog not found',
+          field: 'blogId',
+        },
+      ]);
+    }
     const newPost = await this.postsService.createPost(createPostDto);
 
     return postToOutputModel(newPost, jwtRTPayload.user.userId);
@@ -83,7 +97,23 @@ export class PostsController {
     @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    return this.postsService.updatePost(postId, updatePostDto);
+    const blog = await this.blogsService.getBlogById(updatePostDto.blogId);
+
+    if (!blog) {
+      throw new BadRequestException([
+        {
+          message: 'blog not found',
+          field: 'blogId',
+        },
+      ]);
+    }
+
+    const post = await this.postsService.getPostById(postId);
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+    return this.postsService.updatePost(post, updatePostDto);
   }
 
   @Delete(':postId')
@@ -140,6 +170,7 @@ export class PostsController {
 
   @Put(':postId/like-status')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   async setPostLikeStatus(
     @Param('postId') postId: string,
     @Body() setLikeStatusDto: SetLikeStatusDto,

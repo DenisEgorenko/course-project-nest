@@ -52,20 +52,16 @@ export class PostsService {
     return this.postModel.findOne({ id });
   }
 
-  async updatePost(id: string, updatePostDto: UpdatePostDto): Promise<void> {
-    const posts: PostDocument[] = await this.postModel.find({ id });
-    if (posts.length) {
-      const post = posts[0];
+  async updatePost(
+    post: PostDocument,
+    updatePostDto: UpdatePostDto,
+  ): Promise<PostDocument> {
+    post.setTitle(updatePostDto.title);
+    post.setShortDescription(updatePostDto.shortDescription);
+    post.setContent(updatePostDto.content);
+    post.setBlogId(updatePostDto.blogId);
 
-      post.setTitle(updatePostDto.title);
-      post.setShortDescription(updatePostDto.shortDescription);
-      post.setContent(updatePostDto.content);
-      post.setBlogId(updatePostDto.blogId);
-
-      await post.save();
-    } else {
-      throw new NotFoundException('no such post');
-    }
+    return await post.save();
   }
 
   async deletePost(id: string): Promise<DeleteResult> {

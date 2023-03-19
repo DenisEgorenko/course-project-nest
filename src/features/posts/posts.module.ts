@@ -8,6 +8,7 @@ import { CommentsService } from '../comments/comments.service';
 import { BasicStrategy } from '../auth/strategies/basic.strategy';
 import { AtJwtStrategy } from '../auth/strategies/at.jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
+import { BlogsService } from '../blogs/blogs.service';
 
 @Module({
   imports: [DataBaseModule],
@@ -20,6 +21,7 @@ import { JwtService } from '@nestjs/jwt';
     BasicStrategy,
     AtJwtStrategy,
     JwtService,
+    BlogsService,
   ],
 })
 export class PostsModule {}

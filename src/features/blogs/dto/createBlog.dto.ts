@@ -1,14 +1,18 @@
-import { IsString, IsUrl, Length } from 'class-validator';
+import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
 
 export class CreateBlogDto {
   @IsString()
-  @Length(0, 15)
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(1, 15)
   name: string;
   @IsString()
-  @Length(0, 500)
+  @Transform(({ value }: TransformFnParams) => value?.trim())
+  @Length(1, 500)
   description: string;
   @IsString()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   @IsUrl()
-  @Length(0, 100)
+  @Length(1, 100)
   websiteUrl: string;
 }
