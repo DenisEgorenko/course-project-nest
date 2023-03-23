@@ -61,6 +61,10 @@ export class BlogsBloggerController {
       throw new NotFoundException('no such blog');
     }
 
+    if (blog.userId !== jwtATPayload.user.userId) {
+      throw new ForbiddenException();
+    }
+
     return await this.commandBus.execute(
       new UpdateBlogCommand(blog, updateBlogDto),
     );
@@ -78,6 +82,10 @@ export class BlogsBloggerController {
 
     if (!blog) {
       throw new NotFoundException('no such blog');
+    }
+
+    if (blog.userId !== jwtATPayload.user.userId) {
+      throw new ForbiddenException();
     }
 
     return await this.commandBus.execute(new DeleteBlogCommand(blogId));
@@ -166,7 +174,7 @@ export class BlogsBloggerController {
       throw new NotFoundException('no such blog');
     }
 
-    if (post.blogId !== blogId) {
+    if (post.userId !== jwtATPayload.user.userId) {
       throw new ForbiddenException();
     }
 
@@ -178,6 +186,7 @@ export class BlogsBloggerController {
   //  Delete post
   @Delete(':blogId/posts/:postId')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deletePost(
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
@@ -195,7 +204,7 @@ export class BlogsBloggerController {
       throw new NotFoundException('no such blog');
     }
 
-    if (post.blogId !== blogId) {
+    if (post.userId !== jwtATPayload.user.userId) {
       throw new ForbiddenException();
     }
 

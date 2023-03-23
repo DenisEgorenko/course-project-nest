@@ -41,6 +41,11 @@ export class CommentsController {
     }
 
     const bannedUsers = await this.usersService.getAllBannedUsersIds();
+
+    if (bannedUsers.includes(comment.userId)) {
+      throw new NotFoundException();
+    }
+
     return commentToOutputModel(comment, jwtRTPayload.user.userId, bannedUsers);
   }
 
