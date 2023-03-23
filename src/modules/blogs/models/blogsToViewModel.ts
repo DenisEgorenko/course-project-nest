@@ -58,7 +58,7 @@ export const blogToOutputModelForSA = (
     websiteUrl: blog.websiteUrl,
     createdAt: blog.createdAt,
     isMembership: false,
-    blogOwnershipInfo: {
+    blogOwnerInfo: {
       userId: blog.userId,
       userLogin: blog.userLogin,
     },
@@ -89,7 +89,7 @@ export type blogOutputModelForSA = {
   websiteUrl: string;
   createdAt: Date;
   isMembership: boolean;
-  blogOwnershipInfo: {
+  blogOwnerInfo: {
     userId: string;
     userLogin: string;
   };

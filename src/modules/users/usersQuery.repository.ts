@@ -55,7 +55,7 @@ export class UsersQueryRepository {
 
     const skip: number = pageSize * (pageNumber - 1);
 
-    const totalCount = await this.userModel.countDocuments(filterOr);
+    const totalCount = await this.userModel.countDocuments(filter);
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const items = await this.userModel
