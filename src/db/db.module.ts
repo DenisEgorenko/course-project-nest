@@ -1,17 +1,11 @@
 import { Injectable, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../features/users/schema/user.schema';
-import { Blog, BlogSchema } from '../features/blogs/schema/blogs.schema';
-import { Post, PostSchema } from '../features/posts/schema/post.schema';
-import {
-  Comment,
-  CommentSchema,
-} from '../features/comments/schema/comments.schema';
+import { User, UserSchema } from './schemas/user.schema';
+import { Blog, BlogSchema } from './schemas/blogs.schema';
+import { Post, PostSchema } from './schemas/post.schema';
+import { Comment, CommentSchema } from './schemas/comments.schema';
 import { ConfigService } from '@nestjs/config';
-import {
-  Security,
-  SecuritySchema,
-} from '../features/security/schema/security.schema';
+import { Security, SecuritySchema } from './schemas/security.schema';
 
 @Module({
   imports: [

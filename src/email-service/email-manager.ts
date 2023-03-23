@@ -1,5 +1,5 @@
 import { EmailAdapter } from './email-adapter';
-import { UserDocument } from '../features/users/schema/user.schema';
+import { UserDocument } from '../db/schemas/user.schema';
 
 export const EmailManager = {
   async sendRegistrationEmail(user: UserDocument) {
