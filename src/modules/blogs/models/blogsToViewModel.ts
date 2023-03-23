@@ -13,7 +13,7 @@ export const blogsToOutputModel = (
   return {
     pagesCount: pagesCount,
     page: page,
-    pageSize: query.pageSize,
+    pageSize: pageSize,
     totalCount: totalCount,
     items: items.map((item) => blogToOutputModel(item)),
   };
@@ -31,7 +31,7 @@ export const blogsToOutputModelForSA = (
   return {
     pagesCount: pagesCount,
     page: page,
-    pageSize: query.pageSize,
+    pageSize: pageSize,
     totalCount: totalCount,
     items: items.map((item) => blogToOutputModelForSA(item)),
   };

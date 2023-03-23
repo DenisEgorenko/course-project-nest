@@ -138,7 +138,7 @@ export class BlogsBloggerController {
     }
 
     if (blog.userId !== jwtATPayload.user.userId) {
-      new ForbiddenException();
+      throw new ForbiddenException();
     }
 
     const newPost = await this.commandBus.execute(
