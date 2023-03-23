@@ -22,9 +22,15 @@ export class BanUSerHandler implements ICommandHandler<BanUserCommand> {
   async execute(command: BanUserCommand): Promise<any> {
     const { user, banStatusDto } = command;
 
-    user.setBanStatus(banStatusDto.isBanned);
-    user.setBanReason(banStatusDto.banReason);
-    user.setBanDate(new Date());
+    if (banStatusDto.isBanned) {
+      user.setBanStatus(banStatusDto.isBanned);
+      user.setBanReason(banStatusDto.banReason);
+      user.setBanDate(new Date());
+    } else {
+      user.setBanStatus(banStatusDto.isBanned);
+      user.setBanReason(null);
+      user.setBanDate(null);
+    }
 
     await user.save();
 
