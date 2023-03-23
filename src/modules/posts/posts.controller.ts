@@ -72,7 +72,10 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException();
     }
-    return postToOutputModel(post, jwtRTPayload.user.userId, []);
+
+    const bannedUsers = await this.usersService.getAllBannedUsersIds();
+
+    return postToOutputModel(post, jwtRTPayload.user.userId, bannedUsers);
   }
 
   // Post's comments

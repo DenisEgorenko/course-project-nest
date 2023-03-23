@@ -44,7 +44,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Request() req, @Res({ passthrough: true }) response: Response) {
     if (req.user.accountData.banStatus) {
-      throw new ForbiddenException();
+      throw new UnauthorizedException();
     }
 
     const accessInfo = await this.authService.login(

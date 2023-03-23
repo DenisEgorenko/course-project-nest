@@ -19,10 +19,14 @@ import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-u
 import { commentToOutputModel } from './commentsQuery.repository';
 import { UpdateCommentDto } from './dto/updateComment.dto';
 import { SetLikeStatusDto } from '../posts/dto/setLikeStatusDto';
+import { UsersService } from '../users/users.service';
 
 @Controller('comments')
 export class CommentsController {
-  constructor(protected commentsService: CommentsService) {}
+  constructor(
+    protected commentsService: CommentsService,
+    protected usersService: UsersService,
+  ) {}
 
   @Get(':commentId')
   @UseGuards(AuthGuardForLikes)
@@ -31,10 +35,13 @@ export class CommentsController {
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
     const comment = await this.commentsService.getCommentById(commentId);
+
     if (!comment) {
       throw new NotFoundException('no such comment');
     }
-    return commentToOutputModel(comment, jwtRTPayload.user.userId, []);
+
+    const bannedUsers = await this.usersService.getAllBannedUsersIds();
+    return commentToOutputModel(comment, jwtRTPayload.user.userId, bannedUsers);
   }
 
   @Put(':commentId')
