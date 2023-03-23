@@ -28,6 +28,9 @@ import { ResendConfirmationDto } from './dto/resendConfirmation.dto';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
 import { JwtRefreshAuthGuard } from './guards/refresh-auth-guard.guard';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateUserCommand } from '../users/use-cases/createUser.useCase';
+import { CreateUserDto } from '../users/dto/createUser.dto';
 
 @Controller('auth')
 // @SkipThrottle()
@@ -37,6 +40,7 @@ export class AuthController {
     private readonly usersService: UsersService,
     private readonly securityService: SecurityService,
     private readonly configService: ConfigService,
+    protected commandBus: CommandBus,
   ) {}
 
   @Post('login')
@@ -199,7 +203,12 @@ export class AuthController {
       ]);
     }
 
-    const newUser = await this.authService.userRegistration(registerUserDto);
+    const newUser = await this.commandBus.execute(
+      new CreateUserCommand(registerUserDto as CreateUserDto),
+    );
+
+    await this.authService.userRegistration(newUser);
+
     return addUserToOutputModel(newUser);
   }
 

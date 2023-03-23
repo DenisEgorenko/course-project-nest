@@ -1,18 +1,21 @@
 import { PostDocument } from '../../../db/schemas/post.schema';
 import { LikesModel } from '../../../common/models/likesModel';
+import { postsQueryModel } from './postsQueryModel';
 
 export const postsToOutputModel = (
-  pagesCount: number,
-  page: number,
-  pageSize: number,
-  totalCount: number,
+  query: postsQueryModel,
   items: PostDocument[],
+  totalCount: number,
   userId: string,
   bannedUsers: string[],
 ): postsOutputModel => {
+  const pageSize: number = query.pageSize ? +query.pageSize : 10;
+  const pageNumber: number = query.pageNumber ? +query.pageNumber : 1;
+  const pagesCount = Math.ceil(totalCount / pageSize);
+
   return {
     pagesCount: pagesCount,
-    page: page,
+    page: pageNumber,
     pageSize: pageSize,
     totalCount: totalCount,
     items: items.map((item) => postToOutputModel(item, userId, bannedUsers)),

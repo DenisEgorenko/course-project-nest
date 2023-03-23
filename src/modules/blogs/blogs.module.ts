@@ -16,6 +16,8 @@ import { CreateBlogHandler } from './use-cases/createBlog.useCase';
 import { CreateBlogPostHandler } from './use-cases/createBlogPost.useCase';
 import { UpdateBlogPostHandler } from './use-cases/updateBlogPost.useCase';
 import { DeleteBlogPostHandler } from './use-cases/deleteBlogPost.useCase';
+import { UsersService } from '../users/users.service';
+import { PasswordService } from '../../application/password.service';
 
 const handlers = [
   UpdateBlogHandler,
@@ -35,6 +37,8 @@ const handlers = [
     PostsQueryRepository,
     BasicStrategy,
     JwtService,
+    UsersService,
+    PasswordService,
     ...handlers,
   ],
 })

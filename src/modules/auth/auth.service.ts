@@ -153,10 +153,8 @@ export class AuthService {
     );
   }
 
-  async userRegistration(registerUserDto: RegisterUserDto) {
-    const newUser = await this.usersService.createUser(registerUserDto);
+  async userRegistration(newUser: UserDocument) {
     await EmailManager.sendRegistrationEmail(newUser);
-    return newUser;
   }
 
   async updateConfirmationData(user: UserDocument) {

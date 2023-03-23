@@ -11,7 +11,6 @@ import { BlogsQueryRepository } from '../blogsQuery.repository';
 import { blogsQueryModel } from '../models/blogsQueryModel';
 import { PostsQueryRepository } from '../../posts/postsQuery.repository';
 import { postsQueryModel } from '../../posts/models/postsQueryModel';
-import { PostsService } from '../../posts/posts.service';
 import { AuthGuardForLikes } from '../../auth/guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../../shared/decorators/get-Rt-current-user.decorator';
 import { JwtRTPayload } from '../../auth/interfaces/jwtPayload.type';
@@ -19,12 +18,14 @@ import {
   blogsToOutputModel,
   blogToOutputModel,
 } from '../models/blogsToViewModel';
+import { postsToOutputModel } from '../../posts/models/postsToViewModel';
+import { UsersService } from '../../users/users.service';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     protected blogsService: BlogsService,
-    protected postService: PostsService,
+    protected usersService: UsersService,
     protected blogsQueryRepository: BlogsQueryRepository,
     protected postsQueryRepository: PostsQueryRepository,
   ) {}
@@ -46,23 +47,34 @@ export class BlogsController {
     return blogToOutputModel(blog);
   }
 
-  @Get(':id/posts')
+  @Get(':blogId/posts')
   @UseGuards(AuthGuardForLikes)
   async getBlogPosts(
-    @Param('id') id: string,
+    @Param('blogId') blogId: string,
     @Query() query: postsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
-    const blog = await this.blogsService.getBlogById(id);
+    const blog = await this.blogsService.getBlogById(blogId);
 
     if (!blog) {
       throw new NotFoundException();
     }
 
-    return await this.postsQueryRepository.getAllBlogsPosts(
-      id,
+    const bannedUsers = await this.usersService.getAllBannedUsersIds();
+
+    const items = await this.postsQueryRepository.getAllPosts(
       query,
       jwtRTPayload.user.userId,
+      bannedUsers,
+      blogId,
+    );
+
+    return postsToOutputModel(
+      query,
+      items.items,
+      items.totalCount,
+      jwtRTPayload.user.userId,
+      bannedUsers,
     );
   }
 }

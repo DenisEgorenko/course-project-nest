@@ -12,6 +12,10 @@ import { PasswordService } from '../../application/password.service';
 import { SecurityService } from '../security/security.service';
 import { RtJwtStrategy } from './strategies/rt.jwt.strategy';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CreateUserHandler } from '../users/use-cases/createUser.useCase';
+
+const handlers = [CreateUserHandler];
 
 @Module({
   imports: [
@@ -25,6 +29,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
       ttl: 10,
       limit: 5,
     }),
+    CqrsModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -35,6 +40,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     UsersService,
     PasswordService,
     SecurityService,
+    ...handlers,
   ],
 })
 export class AuthModule {}

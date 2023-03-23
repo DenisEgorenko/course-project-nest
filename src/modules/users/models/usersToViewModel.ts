@@ -1,15 +1,18 @@
 import { UserDocument } from '../../../db/schemas/user.schema';
+import { usersQueryModel } from './usersQueryModel';
 
 export const usersToOutputModel = (
-  pagesCount: number,
-  page: number,
-  pageSize: number,
-  totalCount: number,
+  query: usersQueryModel,
   items: UserDocument[],
+  totalCount: number,
 ): usersOutputModel => {
+  const pageSize: number = query.pageSize ? +query.pageSize : 10;
+  const pageNumber: number = query.pageNumber ? +query.pageNumber : 1;
+  const pagesCount = Math.ceil(totalCount / pageSize);
+
   return {
     pagesCount: pagesCount,
-    page: page,
+    page: pageNumber,
     pageSize: pageSize,
     totalCount: totalCount,
     items: items.map((user) => userToOutputModel(user)),

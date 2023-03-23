@@ -9,8 +9,9 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { BanUSerHandler } from './use-cases/banUser.useCase';
 import { SecurityService } from '../security/security.service';
 import { JwtService } from '@nestjs/jwt';
+import { CreateUserHandler } from './use-cases/createUser.useCase';
 
-const handlers = [BanUSerHandler];
+const handlers = [BanUSerHandler, CreateUserHandler];
 @Module({
   imports: [DataBaseModule, CqrsModule],
   controllers: [UsersSaController],

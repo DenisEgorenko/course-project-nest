@@ -30,7 +30,10 @@ import { GetCurrentATJwtContext } from '../../shared/decorators/get-At-current-u
 import { JwtATPayload, JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
 import { AuthGuardForLikes } from '../auth/guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
-import { postToOutputModel } from './models/postsToViewModel';
+import {
+  postsToOutputModel,
+  postToOutputModel,
+} from './models/postsToViewModel';
 import { BlogsService } from '../blogs/blogs.service';
 import { UsersService } from '../users/users.service';
 
@@ -54,8 +57,16 @@ export class PostsController {
   ) {
     const bannedUsers = await this.usersService.getAllBannedUsersIds();
 
-    return this.postsQueryRepository.getAllPosts(
+    const items = await this.postsQueryRepository.getAllPosts(
       query,
+      jwtRTPayload.user.userId,
+      bannedUsers,
+    );
+
+    return postsToOutputModel(
+      query,
+      items.items,
+      items.totalCount,
       jwtRTPayload.user.userId,
       bannedUsers,
     );
@@ -137,8 +148,6 @@ export class PostsController {
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
     const post = await this.postsService.getPostById(postId);
-
-    console.log(post);
 
     if (!post) {
       throw new NotFoundException('no such post');

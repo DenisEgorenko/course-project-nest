@@ -1,11 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateUserDto } from './dto/createUser.dto';
 import { PasswordService } from '../../application/password.service';
 import { User, UserDocument, UserModel } from '../../db/schemas/user.schema';
-import { userToOutputModel } from './models/usersToViewModel';
-import { v4 as uuidv4 } from 'uuid';
-import { add } from 'date-fns';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -13,44 +10,6 @@ export class UsersService {
     protected userModel: UserModel,
     protected passwordService: PasswordService,
   ) {}
-
-  async createUser(createUserDto: CreateUserDto) {
-    const passwordSalt = await this.passwordService.generateSalt();
-    const passwordHash = await this.passwordService.generateHash(
-      createUserDto.password,
-      passwordSalt,
-    );
-
-    const emailConfirmationCode = uuidv4();
-    const emailConfirmationExpirationDate = add(new Date(), {
-      hours: 1,
-    });
-
-    const newUser = await this.userModel.createUser(
-      createUserDto.login,
-      createUserDto.email,
-      passwordHash,
-      passwordSalt,
-      emailConfirmationCode,
-      emailConfirmationExpirationDate,
-      this.userModel,
-    );
-
-    const createdUser = await newUser.save();
-
-    return createdUser;
-  }
-
-  async deleteUser(id: string) {
-    const user = await this.userModel.find({ 'accountData.id': id });
-    if (!user.length) {
-      throw new NotFoundException('no such user');
-    }
-    const deletedUser = await this.userModel
-      .deleteOne({ 'accountData.id': id })
-      .exec();
-    return deletedUser;
-  }
 
   async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserDocument> {
     return this.userModel.findOne({
@@ -79,6 +38,17 @@ export class UsersService {
     });
   }
 
+  async deleteUser(id: string) {
+    const user = await this.userModel.find({ 'accountData.id': id });
+    if (!user.length) {
+      throw new NotFoundException('no such user');
+    }
+    const deletedUser = await this.userModel
+      .deleteOne({ 'accountData.id': id })
+      .exec();
+    return deletedUser;
+  }
+
   // update functions
 
   async addInvalidRefreshToken(userId: string, refreshToken: string | null) {
@@ -89,10 +59,6 @@ export class UsersService {
     user.addInvalidRefreshToken(refreshToken);
 
     await user.save();
-  }
-
-  async findInvalidUsersTokens(userId: string) {
-    return this.userModel.findOne({});
   }
 
   async updatePasswordRecoveryData(

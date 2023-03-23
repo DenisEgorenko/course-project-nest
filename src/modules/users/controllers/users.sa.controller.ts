@@ -15,12 +15,16 @@ import {
 import { UsersQueryRepository } from '../usersQuery.repository';
 import { UsersService } from '../users.service';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
-import { userToOutputModel } from '../models/usersToViewModel';
+import {
+  usersToOutputModel,
+  userToOutputModel,
+} from '../models/usersToViewModel';
 import { usersQueryModel } from '../models/usersQueryModel';
 import { CreateUserDto } from '../dto/createUser.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { BanUserCommand } from '../use-cases/banUser.useCase';
 import { BanStatusDto } from '../dto/banStatus.dto';
+import { CreateUserCommand } from '../use-cases/createUser.useCase';
 
 @Controller('sa/users')
 // @UseGuards(AuthGuard)
@@ -34,7 +38,9 @@ export class UsersSaController {
   @Get()
   @UseGuards(BasicAuthGuard)
   async getAllUsers(@Query() query: usersQueryModel) {
-    return await this.usersQueryRepository.getAllUsers(query);
+    const items = await this.usersQueryRepository.getAllUsers(query);
+
+    return usersToOutputModel(query, items.items, items.totalCount);
   }
 
   @Post()
@@ -54,7 +60,11 @@ export class UsersSaController {
         },
       ]);
     }
-    const newUser = await this.usersService.createUser(createUserDto);
+
+    const newUser = await this.commandBus.execute(
+      new CreateUserCommand(createUserDto),
+    );
+
     return userToOutputModel(newUser);
   }
 
