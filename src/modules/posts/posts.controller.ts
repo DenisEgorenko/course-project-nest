@@ -44,6 +44,8 @@ export class PostsController {
     protected postsService: PostsService,
     protected commentsService: CommentsService,
     protected usersService: UsersService,
+    protected blogsService: BlogsService,
+
     protected postsQueryRepository: PostsQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
   ) {}
@@ -85,6 +87,11 @@ export class PostsController {
       throw new NotFoundException();
     }
 
+    const bannedBlogs = await this.blogsService.getAllBannedBlogsIds();
+
+    if (bannedBlogs.includes(post.blogId)) {
+      throw new NotFoundException();
+    }
     const bannedUsers = await this.usersService.getAllBannedUsersIds();
 
     return postToOutputModel(post, jwtRTPayload.user.userId, bannedUsers);

@@ -33,6 +33,7 @@ import {
   BanUserForBlogCommand,
   BanUserForBlogHandler,
 } from '../use-cases/banUserForBlog.useCase';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @Controller('blogger/users')
 // @UseGuards(AuthGuard)
@@ -45,7 +46,7 @@ export class UsersBloggerController {
   ) {}
 
   @Get('/blog/:blogId')
-  @UseGuards(BasicAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async getAllBannedUsersForBlog(
     @Query() query: usersQueryModel,
     @Param('blogId') blogId: string,
@@ -61,7 +62,7 @@ export class UsersBloggerController {
   }
 
   @Put(':userId/ban')
-  @UseGuards(BasicAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async banUserForBlog(
     @Body() banStatusDto: BanUserBlogStatusDto,

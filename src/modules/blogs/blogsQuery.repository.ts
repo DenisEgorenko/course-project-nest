@@ -50,7 +50,7 @@ export class BlogsQueryRepository {
     });
 
     const items = await this.blogModel
-      .find(filter)
+      .find({ filter, id: { $nin: bannedBlogs } })
       .sort(sort)
       .skip(skip)
       .limit(pageSize);
