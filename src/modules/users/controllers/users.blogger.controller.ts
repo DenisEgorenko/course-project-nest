@@ -53,12 +53,18 @@ export class UsersBloggerController {
   async getAllBannedUsersForBlog(
     @Query() query: usersQueryModel,
     @Param('blogId') blogId: string,
+    @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
     const blog = await this.blogService.getBlogById(blogId);
 
     if (!blog) {
       throw new NotFoundException();
     }
+
+    if (blog.userId !== jwtATPayload.user.userId) {
+      throw new ForbiddenException();
+    }
+
     const items = await this.usersQueryRepository.getAllUsers(query);
 
     return bannedUsersToOutputModel(
