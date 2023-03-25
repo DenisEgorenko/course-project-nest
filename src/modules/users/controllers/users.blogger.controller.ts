@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   NotFoundException,
@@ -34,6 +35,8 @@ import {
   BanUserForBlogHandler,
 } from '../use-cases/banUserForBlog.useCase';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { GetCurrentATJwtContext } from '../../../shared/decorators/get-At-current-user.decorator';
+import { JwtATPayload } from '../../auth/interfaces/jwtPayload.type';
 
 @Controller('blogger/users')
 // @UseGuards(AuthGuard)
@@ -51,6 +54,11 @@ export class UsersBloggerController {
     @Query() query: usersQueryModel,
     @Param('blogId') blogId: string,
   ) {
+    const blog = await this.blogService.getBlogById(blogId);
+
+    if (!blog) {
+      throw new NotFoundException();
+    }
     const items = await this.usersQueryRepository.getAllUsers(query);
 
     return bannedUsersToOutputModel(
@@ -67,6 +75,7 @@ export class UsersBloggerController {
   async banUserForBlog(
     @Body() banStatusDto: BanUserBlogStatusDto,
     @Param('userId') userId: string,
+    @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
     const user = await this.usersService.findUserByUserId(userId);
 
@@ -79,6 +88,11 @@ export class UsersBloggerController {
     if (!blog) {
       throw new NotFoundException();
     }
+
+    if (blog.userId !== jwtATPayload.user.userId) {
+      throw new ForbiddenException();
+    }
+
     return this.commandBus.execute(
       new BanUserForBlogCommand(user, banStatusDto),
     );

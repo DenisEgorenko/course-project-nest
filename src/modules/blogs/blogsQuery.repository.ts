@@ -35,6 +35,10 @@ export class BlogsQueryRepository {
       filter.$and.push({});
     }
 
+    if (bannedBlogs) {
+      filter.$and.push({ id: { $nin: bannedBlogs } });
+    }
+
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';
     const sortDirection: Sort = query.sortDirection === 'asc' ? 1 : -1;
     const sort = { [sortBy]: sortDirection };
@@ -46,11 +50,10 @@ export class BlogsQueryRepository {
 
     const totalCount = await this.blogModel.countDocuments({
       filter,
-      id: { $nin: bannedBlogs },
     });
 
     const items = await this.blogModel
-      .find({ filter, id: { $nin: bannedBlogs } })
+      .find(filter)
       .sort(sort)
       .skip(skip)
       .limit(pageSize);
