@@ -36,6 +36,8 @@ import { UpdateBlogPostCommand } from '../use-cases/updateBlogPost.useCase';
 import { DeleteBlogPostCommand } from '../use-cases/deleteBlogPost.useCase';
 import { blogsQueryModel } from '../models/blogsQueryModel';
 import { BlogsQueryRepository } from '../blogsQuery.repository';
+import { BlogsCommentsQueryModel } from '../models/blogsCommentsQueryModel';
+import { AllBloggerCommentsQueryRepository } from '../../comments/allBloggerCommentsQuery.repository';
 
 @Controller('blogger/blogs')
 export class BlogsBloggerController {
@@ -44,6 +46,7 @@ export class BlogsBloggerController {
     private blogsService: BlogsService,
     private postsService: PostsService,
     private blogsQueryRepository: BlogsQueryRepository,
+    private allBloggerCommentsQueryRepository: AllBloggerCommentsQueryRepository,
   ) {}
 
   // Update Blog by Id
@@ -213,4 +216,28 @@ export class BlogsBloggerController {
   }
 
   /// Comments
+
+  @Get('comments')
+  @UseGuards(JwtAuthGuard)
+  async getAllCommentsForBlogs(
+    @Query() blogsCommentsQueryModel: BlogsCommentsQueryModel,
+    @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
+  ) {
+    const allUsersPosts = await this.postsService.getAllBloggerPosts(
+      jwtATPayload.user.userId,
+    );
+
+    const allComments =
+      await this.allBloggerCommentsQueryRepository.getAllBloggerPostComments(
+        blogsCommentsQueryModel,
+        jwtATPayload.user.userId,
+        allUsersPosts,
+      );
+
+    return this.allBloggerCommentsQueryRepository.allBloggerPostsCommentsToOutputModel(
+      blogsCommentsQueryModel,
+      allComments.items,
+      allComments.totalCount,
+    );
+  }
 }

@@ -19,6 +19,7 @@ import { DeleteBlogPostHandler } from './use-cases/deleteBlogPost.useCase';
 import { UsersService } from '../users/users.service';
 import { PasswordService } from '../../application/password.service';
 import { BanBlogHandler } from './use-cases/banBlog.useCase';
+import { AllBloggerCommentsQueryRepository } from '../comments/allBloggerCommentsQuery.repository';
 
 const handlers = [
   UpdateBlogHandler,
@@ -41,6 +42,7 @@ const handlers = [
     JwtService,
     UsersService,
     PasswordService,
+    AllBloggerCommentsQueryRepository,
     ...handlers,
   ],
 })

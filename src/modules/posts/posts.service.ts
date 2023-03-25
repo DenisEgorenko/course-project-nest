@@ -23,6 +23,11 @@ export class PostsService {
     return this.postModel.deleteOne({ id });
   }
 
+  async getAllBloggerPosts(userId: string) {
+    const posts = await this.postModel.find({ userId });
+    return posts.map((post) => post.id);
+  }
+
   // Post's likes
 
   async getUserLikeInfo(userId: string, postId: string) {
