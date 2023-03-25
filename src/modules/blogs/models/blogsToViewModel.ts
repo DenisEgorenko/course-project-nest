@@ -65,7 +65,7 @@ export const blogToOutputModelForSA = (
       userId: blog.userId,
       userLogin: blog.userLogin,
     },
-    banOwnerInfo: {
+    banInfo: {
       isBanned: blog.isBanned,
       banDate: blog.banDate,
     },
@@ -100,7 +100,7 @@ export type blogOutputModelForSA = {
     userId: string;
     userLogin: string;
   };
-  banOwnerInfo: {
+  banInfo: {
     isBanned: boolean;
     banDate: Date | null;
   };

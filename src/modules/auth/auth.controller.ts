@@ -25,7 +25,7 @@ import { SetNewPasswordDto } from './dto/setNewPassword.dto';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { addUserToOutputModel } from '../users/models/usersToViewModel';
 import { ResendConfirmationDto } from './dto/resendConfirmation.dto';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
 import { JwtRefreshAuthGuard } from './guards/refresh-auth-guard.guard';
 import { CommandBus } from '@nestjs/cqrs';
@@ -33,7 +33,7 @@ import { CreateUserCommand } from '../users/use-cases/createUser.useCase';
 import { CreateUserDto } from '../users/dto/createUser.dto';
 
 @Controller('auth')
-// @SkipThrottle()
+@SkipThrottle()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
