@@ -62,6 +62,16 @@ class PasswordRecovery {
   expirationDate: Date;
 }
 
+@Schema({ _id: false })
+export class BlogsBanInfo {
+  @Prop({ required: true })
+  blogId: string;
+  @Prop({ required: true })
+  banReason: string;
+  @Prop({ required: true })
+  banDate: Date;
+}
+
 @Schema()
 export class User {
   @Prop({ required: true })
@@ -72,6 +82,9 @@ export class User {
 
   @Prop({ required: true })
   passwordRecovery: PasswordRecovery;
+
+  @Prop({ required: true })
+  blogsBanInfo: BlogsBanInfo[];
 
   addInvalidRefreshToken(refreshToken: string) {
     this.accountData.invalidRefreshTokens.push(refreshToken);
@@ -116,6 +129,10 @@ export class User {
   setBanDate(date: Date) {
     this.accountData.banDate = date;
   }
+
+  addBlogBanInfo(banInfo: BlogsBanInfo) {
+    this.blogsBanInfo.push(banInfo);
+  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -134,6 +151,7 @@ UserSchema.methods.setIsConfirmed = User.prototype.setIsConfirmed;
 UserSchema.methods.setBanStatus = User.prototype.setBanStatus;
 UserSchema.methods.setBanReason = User.prototype.setBanReason;
 UserSchema.methods.setBanDate = User.prototype.setBanDate;
+UserSchema.methods.addBlogBanInfo = User.prototype.addBlogBanInfo;
 
 /// Statics
 

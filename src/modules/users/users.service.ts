@@ -100,4 +100,10 @@ export class UsersService {
 
     return users.map((user) => user.accountData.id);
   }
+
+  async getUserStatusForBlog(userId: string, blogId: string) {
+    const user = await this.findUserByUserId(userId);
+
+    return user.blogsBanInfo.filter((ban) => ban.blogId === blogId).length > 0;
+  }
 }

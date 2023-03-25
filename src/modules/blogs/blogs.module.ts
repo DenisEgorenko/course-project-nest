@@ -18,6 +18,7 @@ import { UpdateBlogPostHandler } from './use-cases/updateBlogPost.useCase';
 import { DeleteBlogPostHandler } from './use-cases/deleteBlogPost.useCase';
 import { UsersService } from '../users/users.service';
 import { PasswordService } from '../../application/password.service';
+import { BanBlogHandler } from './use-cases/banBlog.useCase';
 
 const handlers = [
   UpdateBlogHandler,
@@ -26,6 +27,7 @@ const handlers = [
   CreateBlogPostHandler,
   UpdateBlogPostHandler,
   DeleteBlogPostHandler,
+  BanBlogHandler,
 ];
 @Module({
   imports: [DataBaseModule, CqrsModule],

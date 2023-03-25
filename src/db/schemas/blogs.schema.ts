@@ -35,6 +35,11 @@ export class Blog {
   websiteUrl: string;
   @Prop({ required: true })
   createdAt: Date;
+  @Prop({ required: true })
+  isBanned: boolean;
+
+  @Prop({ required: false })
+  banDate: Date | null;
 
   setName(name: string) {
     this.name = name;
@@ -47,6 +52,14 @@ export class Blog {
   setWebsiteUrl(websiteUrl: string) {
     this.websiteUrl = websiteUrl;
   }
+
+  setIsBanned(isBanned: boolean) {
+    this.isBanned = isBanned;
+  }
+
+  setBannedDate(date: Date) {
+    this.banDate = date;
+  }
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
@@ -55,6 +68,8 @@ export const BlogSchema = SchemaFactory.createForClass(Blog);
 BlogSchema.methods.setName = Blog.prototype.setName;
 BlogSchema.methods.setDescription = Blog.prototype.setDescription;
 BlogSchema.methods.setWebsiteUrl = Blog.prototype.setWebsiteUrl;
+BlogSchema.methods.setIsBanned = Blog.prototype.setIsBanned;
+BlogSchema.methods.setBannedDate = Blog.prototype.setBannedDate;
 
 /// Statics
 BlogSchema.statics.createBlog = (
@@ -73,5 +88,7 @@ BlogSchema.statics.createBlog = (
     description: description,
     websiteUrl: websiteUrl,
     createdAt: new Date(),
+    isBanned: false,
+    banDate: null,
   });
 };

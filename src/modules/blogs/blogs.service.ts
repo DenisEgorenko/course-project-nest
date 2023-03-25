@@ -12,4 +12,10 @@ export class BlogsService {
   async getBlogById(id: string): Promise<BlogDocument> {
     return this.blogModel.findOne({ id });
   }
+
+  async getAllBannedBlogsIds() {
+    const blogs = await this.blogModel.find({ isBanned: true });
+
+    return blogs.map((blogs) => blogs.id);
+  }
 }

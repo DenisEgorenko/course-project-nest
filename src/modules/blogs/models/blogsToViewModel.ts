@@ -5,17 +5,20 @@ export const blogsToOutputModel = (
   query: blogsQueryModel,
   items: BlogDocument[],
   totalCount: number,
+  bannedBlogs: string[],
 ): blogsOutputModel => {
   const pageSize: number = query.pageSize ? +query.pageSize : 10;
   const pagesCount = Math.ceil(totalCount / pageSize);
   const page: number = query.pageNumber ? +query.pageNumber : 1;
+
+  const notBannedBlogs = items.filter((blog) => !bannedBlogs.includes(blog.id));
 
   return {
     pagesCount: pagesCount,
     page: page,
     pageSize: pageSize,
     totalCount: totalCount,
-    items: items.map((item) => blogToOutputModel(item)),
+    items: notBannedBlogs.map((item) => blogToOutputModel(item)),
   };
 };
 
@@ -62,6 +65,10 @@ export const blogToOutputModelForSA = (
       userId: blog.userId,
       userLogin: blog.userLogin,
     },
+    banOwnerInfo: {
+      isBanned: blog.isBanned,
+      banDate: blog.banDate,
+    },
   };
 };
 
@@ -92,5 +99,9 @@ export type blogOutputModelForSA = {
   blogOwnerInfo: {
     userId: string;
     userLogin: string;
+  };
+  banOwnerInfo: {
+    isBanned: boolean;
+    banDate: Date | null;
   };
 };

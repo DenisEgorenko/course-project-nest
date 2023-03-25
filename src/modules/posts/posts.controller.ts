@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   NotFoundException,
@@ -127,6 +128,14 @@ export class PostsController {
       throw new NotFoundException('no such post');
     }
 
+    if (
+      await this.usersService.getUserStatusForBlog(
+        jwtATPayload.user.userId,
+        post.blogId,
+      )
+    ) {
+      throw new ForbiddenException();
+    }
     const newComment = await this.commentsService.createPostComment(
       createCommentDto,
       postId,

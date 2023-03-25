@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   Put,
   Query,
@@ -14,10 +16,18 @@ import {
 } from '../models/blogsToViewModel';
 import { blogsQueryModel } from '../models/blogsQueryModel';
 import { BlogsQueryRepository } from '../blogsQuery.repository';
+import { BlogsService } from '../blogs.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { BanStatusDto } from './dto/banStatus.dto';
+import { BanBlogCommand } from '../use-cases/banBlog.useCase';
 
 @Controller('sa/blogs')
 export class BlogsSaController {
-  constructor(protected blogsQueryRepository: BlogsQueryRepository) {}
+  constructor(
+    protected blogsQueryRepository: BlogsQueryRepository,
+    protected blogService: BlogsService,
+    protected commandBus: CommandBus,
+  ) {}
 
   // Bind Blog with user
   @Put(':blogId/bind-with-user/:userId')
@@ -37,5 +47,23 @@ export class BlogsSaController {
     const result = await this.blogsQueryRepository.getAllBlogs(query);
 
     return blogsToOutputModelForSA(query, result.items, result.totalCount);
+  }
+
+  // Ban Blog
+
+  @Put(':blogId/ban')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
+  async banBlog(
+    @Body() banStatusDto: BanStatusDto,
+    @Param('blogId') blogId: string,
+  ) {
+    const blog = await this.blogService.getBlogById(blogId);
+
+    if (!blog) {
+      throw new NotFoundException();
+    }
+
+    await this.commandBus.execute(new BanBlogCommand(blog, banStatusDto));
   }
 }

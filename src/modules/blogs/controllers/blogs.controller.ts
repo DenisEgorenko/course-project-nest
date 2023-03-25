@@ -32,9 +32,19 @@ export class BlogsController {
 
   @Get()
   async getAllBlogs(@Query() query: blogsQueryModel) {
-    const result = await this.blogsQueryRepository.getAllBlogs(query);
+    const bannedBlogs = await this.blogsService.getAllBannedBlogsIds();
 
-    return blogsToOutputModel(query, result.items, result.totalCount);
+    const result = await this.blogsQueryRepository.getAllBlogs(
+      query,
+      bannedBlogs,
+    );
+
+    return blogsToOutputModel(
+      query,
+      result.items,
+      result.totalCount,
+      bannedBlogs,
+    );
   }
 
   @Get(':id')
@@ -42,6 +52,10 @@ export class BlogsController {
     const blog = await this.blogsService.getBlogById(id);
 
     if (!blog) {
+      throw new NotFoundException();
+    }
+
+    if (blog.isBanned) {
       throw new NotFoundException();
     }
     return blogToOutputModel(blog);

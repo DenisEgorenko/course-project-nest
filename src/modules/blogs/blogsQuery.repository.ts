@@ -14,6 +14,7 @@ export class BlogsQueryRepository {
   ) {}
   async getAllBlogs(
     query: blogsQueryModel,
+    bannedBlogs?: string[],
     userId?: string,
   ): Promise<queryResultType> {
     const filter: { $and: any[] } = { $and: [] };
@@ -43,7 +44,10 @@ export class BlogsQueryRepository {
 
     const skip: number = pageSize * (page - 1);
 
-    const totalCount = await this.blogModel.countDocuments(filter);
+    const totalCount = await this.blogModel.countDocuments({
+      filter,
+      id: { $nin: bannedBlogs },
+    });
 
     const items = await this.blogModel
       .find(filter)

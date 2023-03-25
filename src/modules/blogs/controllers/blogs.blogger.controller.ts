@@ -117,10 +117,11 @@ export class BlogsBloggerController {
   ) {
     const result = await this.blogsQueryRepository.getAllBlogs(
       query,
+      [],
       jwtATPayload.user.userId,
     );
 
-    return blogsToOutputModel(query, result.items, result.totalCount);
+    return blogsToOutputModel(query, result.items, result.totalCount, []);
   }
 
   //  Create new post for blog
@@ -210,4 +211,6 @@ export class BlogsBloggerController {
 
     await this.commandBus.execute(new DeleteBlogPostCommand(postId));
   }
+
+  /// Comments
 }

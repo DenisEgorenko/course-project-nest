@@ -10,11 +10,14 @@ import { BanUSerHandler } from './use-cases/banUser.useCase';
 import { SecurityService } from '../security/security.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserHandler } from './use-cases/createUser.useCase';
+import { BanUserForBlogHandler } from './use-cases/banUserForBlog.useCase';
+import { UsersBloggerController } from './controllers/users.blogger.controller';
+import { BlogsService } from '../blogs/blogs.service';
 
-const handlers = [BanUSerHandler, CreateUserHandler];
+const handlers = [BanUSerHandler, CreateUserHandler, BanUserForBlogHandler];
 @Module({
   imports: [DataBaseModule, CqrsModule],
-  controllers: [UsersSaController],
+  controllers: [UsersSaController, UsersBloggerController],
   providers: [
     UsersService,
     PasswordService,
@@ -22,6 +25,7 @@ const handlers = [BanUSerHandler, CreateUserHandler];
     BasicStrategy,
     SecurityService,
     JwtService,
+    BlogsService,
     ...handlers,
   ],
 })
