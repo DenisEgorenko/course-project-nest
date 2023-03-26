@@ -89,7 +89,7 @@ export const bannedUsersToOutputModel = (
     pagesCount: pagesCount,
     page: pageNumber,
     pageSize: pageSize,
-    totalCount: filtered.length,
+    totalCount: totalCount,
     items: filtered.map((user) => bannedUserToOutputModel(user, blogId)),
   };
 };

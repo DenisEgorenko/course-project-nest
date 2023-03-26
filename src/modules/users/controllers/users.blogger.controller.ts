@@ -65,6 +65,8 @@ export class UsersBloggerController {
       throw new ForbiddenException();
     }
 
+    // const queryBanned = { ...query, banStatus: 'banned' };
+
     const items = await this.usersQueryRepository.getAllUsers(query);
 
     return bannedUsersToOutputModel(

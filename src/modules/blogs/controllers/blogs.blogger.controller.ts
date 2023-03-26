@@ -38,6 +38,7 @@ import { blogsQueryModel } from '../models/blogsQueryModel';
 import { BlogsQueryRepository } from '../blogsQuery.repository';
 import { BlogsCommentsQueryModel } from '../models/blogsCommentsQueryModel';
 import { AllBloggerCommentsQueryRepository } from '../../comments/allBloggerCommentsQuery.repository';
+import { UsersService } from '../../users/users.service';
 
 @Controller('blogger/blogs')
 export class BlogsBloggerController {
@@ -45,6 +46,7 @@ export class BlogsBloggerController {
     private commandBus: CommandBus,
     private blogsService: BlogsService,
     private postsService: PostsService,
+    private usersService: UsersService,
     private blogsQueryRepository: BlogsQueryRepository,
     private allBloggerCommentsQueryRepository: AllBloggerCommentsQueryRepository,
   ) {}
@@ -227,6 +229,8 @@ export class BlogsBloggerController {
       jwtATPayload.user.userId,
     );
 
+    const bannedUsers = await this.usersService.getAllBannedUsersIds();
+
     const allComments =
       await this.allBloggerCommentsQueryRepository.getAllBloggerPostComments(
         blogsCommentsQueryModel,
@@ -238,6 +242,8 @@ export class BlogsBloggerController {
       blogsCommentsQueryModel,
       allComments.items,
       allComments.totalCount,
+      jwtATPayload.user.userId,
+      bannedUsers,
     );
   }
 }

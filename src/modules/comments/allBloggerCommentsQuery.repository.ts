@@ -48,6 +48,8 @@ export class AllBloggerCommentsQueryRepository {
     blogsCommentsQueryModel: BlogsCommentsQueryModel,
     items: CommentDocument[],
     totalCount: number,
+    userId: string,
+    bannedUsers: string[],
   ): Promise<commentsOutputModel> {
     const pageSize: number = blogsCommentsQueryModel.pageSize
       ? +blogsCommentsQueryModel.pageSize
@@ -63,15 +65,29 @@ export class AllBloggerCommentsQueryRepository {
       pageSize: pageSize,
       totalCount: totalCount,
       items: await Promise.all(
-        items.map(async (comment) => await this.commentToOutputModel(comment)),
+        items.map(
+          async (comment) =>
+            await this.commentToOutputModel(comment, userId, bannedUsers),
+        ),
       ),
     };
   }
 
   async commentToOutputModel(
     item: CommentDocument,
+    userId: string,
+    bannedUsers: string[],
   ): Promise<commentOutputModel> {
     const postInfo = await this.postService.getPostById(item.postId);
+
+    const likes = item.likesInfo.likes.filter(
+      (like) => !bannedUsers.includes(like),
+    );
+
+    const dislikes = item.likesInfo.dislikes.filter(
+      (dislike) => !bannedUsers.includes(dislike),
+    );
+
     return {
       id: item.id,
       content: item.content,
@@ -80,6 +96,15 @@ export class AllBloggerCommentsQueryRepository {
         userLogin: item.userLogin,
       },
       createdAt: item.createdAt,
+      likesInfo: {
+        likesCount: likes.length,
+        dislikesCount: dislikes.length,
+        myStatus: item.likesInfo.likes.includes(userId)
+          ? LikesModel.Like
+          : item.likesInfo.dislikes.includes(userId)
+          ? LikesModel.Dislike
+          : LikesModel.None,
+      },
       postInfo: {
         id: postInfo.id,
         blogId: postInfo.blogId,
@@ -107,6 +132,11 @@ export type commentOutputModel = {
     userLogin: string;
   };
   createdAt: Date;
+  likesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: string;
+  };
   postInfo: {
     id: string;
     title: string;

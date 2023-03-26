@@ -43,6 +43,7 @@ const handlers = [
     UsersService,
     PasswordService,
     AllBloggerCommentsQueryRepository,
+    UsersService,
     ...handlers,
   ],
 })
