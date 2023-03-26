@@ -12,9 +12,10 @@ export class UsersQueryRepository {
     @InjectModel(User.name)
     protected userModel: Model<UserDocument> & UserStatics,
   ) {}
-  async getAllUsers(query: usersQueryModel) {
+  async getAllUsers(query: usersQueryModel, bannedBlogId?: string) {
     const filterOr: { $or: any[] } = { $or: [] };
     let filterStatus = {};
+    let filterBannedBlog = {};
 
     if (query.banStatus === 'banned') {
       filterStatus = {
@@ -26,6 +27,10 @@ export class UsersQueryRepository {
       filterStatus = {
         'accountData.banStatus': false,
       };
+    }
+
+    if (bannedBlogId) {
+      filterBannedBlog = { 'blogsBanInfo.blogId': bannedBlogId };
     }
 
     if (query.searchEmailTerm) {
@@ -44,7 +49,7 @@ export class UsersQueryRepository {
       filterOr.$or.push({});
     }
 
-    const filter = Object.assign({}, filterOr, filterStatus);
+    const filter = Object.assign({}, filterOr, filterStatus, filterBannedBlog);
 
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';
     const sortDirection: Sort = query.sortDirection === 'asc' ? 1 : -1;

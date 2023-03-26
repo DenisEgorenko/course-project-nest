@@ -44,8 +44,6 @@ export class BlogsSaController {
   @Get()
   @UseGuards(BasicAuthGuard)
   async getAllBlogs(@Query() query: blogsQueryModel) {
-    const bannedBlogs = await this.blogService.getAllBannedBlogsIds();
-
     const result = await this.blogsQueryRepository.getAllBlogs(query);
 
     return blogsToOutputModelForSA(query, result.items, result.totalCount);

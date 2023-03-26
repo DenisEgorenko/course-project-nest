@@ -80,17 +80,17 @@ export const bannedUsersToOutputModel = (
   const pageNumber: number = query.pageNumber ? +query.pageNumber : 1;
   const pagesCount = Math.ceil(totalCount / pageSize);
 
-  const filtered = items.filter(
-    (user) =>
-      user.blogsBanInfo.filter((ban) => ban.blogId === blogId).length > 0,
-  );
+  // const filtered = items.filter(
+  //   (user) =>
+  //     user.blogsBanInfo.filter((ban) => ban.blogId === blogId).length > 0,
+  // );
 
   return {
     pagesCount: pagesCount,
     page: pageNumber,
     pageSize: pageSize,
     totalCount: totalCount,
-    items: filtered.map((user) => bannedUserToOutputModel(user, blogId)),
+    items: items.map((user) => bannedUserToOutputModel(user, blogId)),
   };
 };
 
