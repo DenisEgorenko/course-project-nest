@@ -48,9 +48,7 @@ export class BlogsQueryRepository {
 
     const skip: number = pageSize * (page - 1);
 
-    const totalCount = await this.blogModel.countDocuments({
-      filter,
-    });
+    const totalCount = await this.blogModel.countDocuments(filter);
 
     const items = await this.blogModel
       .find(filter)
