@@ -10,11 +10,12 @@ import { AtJwtStrategy } from '../auth/strategies/at.jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
 import { BlogsService } from '../blogs/blogs.service';
 import { IsBlogIdExistConstraint } from './decorators/isBlogIdExistValidation.decorator';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/services/users.service';
 import { PasswordService } from '../../application/password.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [DataBaseModule],
+  imports: [DataBaseModule, UsersModule],
   controllers: [PostsController],
   providers: [
     PostsService,
@@ -27,7 +28,6 @@ import { PasswordService } from '../../application/password.service';
     BlogsService,
     BlogsService,
     IsBlogIdExistConstraint,
-    UsersService,
     PasswordService,
   ],
 })

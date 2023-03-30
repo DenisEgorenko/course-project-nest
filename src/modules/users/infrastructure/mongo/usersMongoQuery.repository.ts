@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { usersQueryModel } from './models/usersQueryModel';
+import { usersQueryModel } from '../../core/models/usersQueryModel';
 import { Model } from 'mongoose';
 import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument, UserStatics } from '../../db/schemas/user.schema';
-import { usersToOutputModel } from './models/usersToViewModel';
+import { User, UserDocument, UserStatics } from './model/user.schema';
 
 @Injectable()
-export class UsersQueryRepository {
+export class UsersMongoQueryRepository {
   constructor(
     @InjectModel(User.name)
     protected userModel: Model<UserDocument> & UserStatics,

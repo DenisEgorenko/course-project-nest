@@ -38,7 +38,7 @@ import { blogsQueryModel } from '../models/blogsQueryModel';
 import { BlogsQueryRepository } from '../blogsQuery.repository';
 import { BlogsCommentsQueryModel } from '../models/blogsCommentsQueryModel';
 import { AllBloggerCommentsQueryRepository } from '../../comments/allBloggerCommentsQuery.repository';
-import { UsersService } from '../../users/users.service';
+import { UsersService } from '../../users/services/users.service';
 
 @Controller('blogger/blogs')
 export class BlogsBloggerController {

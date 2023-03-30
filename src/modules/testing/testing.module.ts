@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { DataBaseModule } from '../../db/db.module';
 import { TestingController } from './testing.controller';
-import { TestingService } from './testing.service';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ClearAllDataHandler } from './use-cases/clearAllData.useCase';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [DataBaseModule],
+  imports: [DataBaseModule, CqrsModule, UsersModule],
   controllers: [TestingController],
-  providers: [TestingService],
+  providers: [ClearAllDataHandler],
 })
 export class TestingModule {}

@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -12,25 +11,30 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { AuthService } from './auth.service';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { AuthService } from '../services/auth.service';
 import { Response } from 'express';
-import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
-import { JwtRTPayload } from './interfaces/jwtPayload.type';
-import { SecurityService } from '../security/security.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { UsersService } from '../users/users.service';
-import { PasswordRecoveryDto } from './dto/passwordRecovery.dto';
-import { SetNewPasswordDto } from './dto/setNewPassword.dto';
-import { RegisterUserDto } from './dto/registerUser.dto';
-import { addUserToOutputModel } from '../users/models/usersToViewModel';
-import { ResendConfirmationDto } from './dto/resendConfirmation.dto';
+import { GetCurrentRTJwtContext } from '../../../shared/decorators/get-Rt-current-user.decorator';
+import { JwtRTPayload } from '../interfaces/jwtPayload.type';
+import { SecurityService } from '../../security/services/security.service';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { UsersService } from '../../users/services/users.service';
+import { PasswordRecoveryDto } from '../dto/passwordRecovery.dto';
+import { SetNewPasswordDto } from '../dto/setNewPassword.dto';
+import { RegisterUserDto } from '../dto/registerUser.dto';
+import { ResendConfirmationDto } from '../dto/resendConfirmation.dto';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
-import { JwtRefreshAuthGuard } from './guards/refresh-auth-guard.guard';
+import { JwtRefreshAuthGuard } from '../guards/refresh-auth-guard.guard';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../users/use-cases/createUser.useCase';
-import { CreateUserDto } from '../users/dto/createUser.dto';
+import { UpdateUserPasswordDataCommand } from '../use-cases/updateUserPasswordData.useCase';
+import { ConfirmUserEmailCommand } from '../use-cases/confirmUserEmail.useCase';
+import { RegistrationCommand } from '../use-cases/registration.useCase';
+import { ResendConfirmationCommand } from '../use-cases/resendConfirmation.useCase';
+import { RecoveryUserPasswordCommand } from '../use-cases/recoveryUserPassword.useCase';
+import { LoginUserCommand } from '../use-cases/loginUser.useCase';
+import { LogoutUserCommand } from '../use-cases/logoutUser.useCase';
+import { RefreshTokenCommand } from '../use-cases/refreshToken.useCase';
 
 @Controller('auth')
 @SkipThrottle()
@@ -47,15 +51,18 @@ export class AuthController {
   @UseGuards(ThrottlerGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   async login(@Request() req, @Res({ passthrough: true }) response: Response) {
-    if (req.user.accountData.banStatus) {
+    if (req.user.banStatus) {
       throw new UnauthorizedException();
     }
 
-    const accessInfo = await this.authService.login(
-      req.user,
-      req.ip,
-      req.headers['user-agent'] || 'undefined',
+    const accessInfo = await this.commandBus.execute(
+      new LoginUserCommand(
+        req.user.id,
+        req.ip,
+        req.headers['user-agent'] || 'undefined',
+      ),
     );
+
     response.cookie('refreshToken', accessInfo.refresh_token, {
       httpOnly: this.configService.get<boolean>('test.mode'),
       secure: this.configService.get<boolean>('test.mode'),
@@ -70,18 +77,14 @@ export class AuthController {
     @GetCurrentRTJwtContext() ctx: JwtRTPayload,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const user = await this.usersService.findUserByLoginOrEmail(ctx.user.login);
-
     if (
       await this.authService.isTokenInvalid(ctx.user.userId, ctx.refreshToken)
     ) {
       throw new UnauthorizedException();
     }
 
-    await this.authService.logout(
-      ctx.deviceId,
-      ctx.user.userId,
-      ctx.refreshToken,
+    await this.commandBus.execute(
+      new LogoutUserCommand(ctx.user.userId, ctx.deviceId, ctx.refreshToken),
     );
 
     await response.clearCookie('refreshToken');
@@ -114,16 +117,8 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    await this.usersService.addInvalidRefreshToken(
-      ctx.user.userId,
-      ctx.refreshToken,
-    );
-
-    const accessInfo = await this.authService.generateNewTokens(
-      ctx.user.userId,
-      ctx.user.login,
-      ctx.user.email,
-      ctx.deviceId,
+    const accessInfo = await this.commandBus.execute(
+      new RefreshTokenCommand(ctx.user.userId, ctx.deviceId, ctx.refreshToken),
     );
 
     response.cookie('refreshToken', accessInfo.refresh_token, {
@@ -147,7 +142,9 @@ export class AuthController {
       return;
     }
 
-    return this.authService.passwordRecovery(user);
+    return this.commandBus.execute(
+      new RecoveryUserPasswordCommand(passwordRecoveryDto),
+    );
   }
 
   @Post('new-password')
@@ -166,9 +163,8 @@ export class AuthController {
       throw new BadRequestException([{ message: 'Recovery code is expired' }]);
     }
 
-    await this.usersService.updateUserPasswordData(
-      user,
-      setNewPasswordDto.newPassword,
+    await this.commandBus.execute(
+      new UpdateUserPasswordDataCommand(setNewPasswordDto),
     );
   }
 
@@ -203,13 +199,9 @@ export class AuthController {
       ]);
     }
 
-    const newUser = await this.commandBus.execute(
-      new CreateUserCommand(registerUserDto as CreateUserDto),
+    return await this.commandBus.execute(
+      new RegistrationCommand(registerUserDto),
     );
-
-    await this.authService.userRegistration(newUser);
-
-    return addUserToOutputModel(newUser);
   }
 
   @Post('registration-confirmation')
@@ -217,6 +209,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(@Body() data: { code: string }) {
     const user = await this.usersService.findUserByConfirmationCode(data.code);
+
     if (!user) {
       throw new BadRequestException([
         { message: 'Wrong confirmation code', field: 'code' },
@@ -229,10 +222,17 @@ export class AuthController {
     }
 
     if (user.emailConfirmation.isConfirmed) {
-      throw new BadRequestException('email already confirmed');
+      throw new BadRequestException([
+        {
+          message: 'Email already confirmed',
+          field: 'code',
+        },
+      ]);
     }
 
-    await this.usersService.confirmUserEmail(user);
+    return await this.commandBus.execute(
+      new ConfirmUserEmailCommand(data.code),
+    );
   }
 
   @Post('registration-email-resending')
@@ -244,6 +244,8 @@ export class AuthController {
     const user = await this.usersService.findUserByLoginOrEmail(
       resendConfirmationDto.email,
     );
+
+    console.log(user);
 
     if (!user) {
       throw new BadRequestException([
@@ -257,6 +259,8 @@ export class AuthController {
       ]);
     }
 
-    await this.authService.updateConfirmationData(user);
+    await this.commandBus.execute(
+      new ResendConfirmationCommand(resendConfirmationDto),
+    );
   }
 }

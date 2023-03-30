@@ -1,22 +1,36 @@
 import { Module } from '@nestjs/common';
 import { DataBaseModule } from '../../db/db.module';
-import { AuthController } from './auth.controller';
+import { AuthController } from './ controllers/auth.controller';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { AtJwtStrategy } from './strategies/at.jwt.strategy';
-import { UsersService } from '../users/users.service';
 import { PasswordService } from '../../application/password.service';
-import { SecurityService } from '../security/security.service';
+import { SecurityService } from '../security/services/security.service';
 import { RtJwtStrategy } from './strategies/rt.jwt.strategy';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CqrsModule } from '@nestjs/cqrs';
-import { CreateUserHandler } from '../users/use-cases/createUser.useCase';
+import { RegistrationHandler } from './use-cases/registration.useCase';
+import { ResendConfirmationHandler } from './use-cases/resendConfirmation.useCase';
+import { RecoveryUserPasswordHandler } from './use-cases/recoveryUserPassword.useCase';
+import { UpdateUserPasswordDataHandler } from './use-cases/updateUserPasswordData.useCase';
+import { LoginUserHandler } from './use-cases/loginUser.useCase';
+import { SecurityModule } from '../security/security.module';
+import { JwtTokenManager } from './jwt-manager/jwt-token.manager';
+import { LogoutUserHandler } from './use-cases/logoutUser.useCase';
+import { RefreshTokenHandler } from './use-cases/refreshToken.useCase';
 
-const handlers = [CreateUserHandler];
-
+const handlers = [
+  RegistrationHandler,
+  ResendConfirmationHandler,
+  RecoveryUserPasswordHandler,
+  UpdateUserPasswordDataHandler,
+  LoginUserHandler,
+  LogoutUserHandler,
+  RefreshTokenHandler,
+];
 @Module({
   imports: [
     DataBaseModule,
@@ -30,6 +44,7 @@ const handlers = [CreateUserHandler];
       limit: 5,
     }),
     CqrsModule,
+    SecurityModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -37,9 +52,9 @@ const handlers = [CreateUserHandler];
     LocalStrategy,
     AtJwtStrategy,
     RtJwtStrategy,
-    UsersService,
     PasswordService,
     SecurityService,
+    JwtTokenManager,
     ...handlers,
   ],
 })

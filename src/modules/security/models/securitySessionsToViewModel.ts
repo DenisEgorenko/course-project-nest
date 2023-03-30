@@ -1,4 +1,5 @@
-import { SecurityDocument } from '../../../db/schemas/security.schema';
+import { SecurityDocument } from '../infrastructure/mongo/model/security.schema';
+import { SecurityBaseEntity } from '../core/entity/security.entity';
 
 export type SecuritySessionsViewModel = {
   ip: string;
@@ -7,7 +8,7 @@ export type SecuritySessionsViewModel = {
   deviceId: string;
 };
 
-export const SecuritySessionsToViewModel = (sessions: SecurityDocument[]) =>
+export const SecuritySessionsToViewModel = (sessions: SecurityBaseEntity[]) =>
   sessions.map((session) => ({
     ip: session.ip,
     title: session.title,

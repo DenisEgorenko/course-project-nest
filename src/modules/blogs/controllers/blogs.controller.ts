@@ -19,7 +19,7 @@ import {
   blogToOutputModel,
 } from '../models/blogsToViewModel';
 import { postsToOutputModel } from '../../posts/models/postsToViewModel';
-import { UsersService } from '../../users/users.service';
+import { UsersService } from '../../users/services/users.service';
 
 @Controller('blogs')
 export class BlogsController {

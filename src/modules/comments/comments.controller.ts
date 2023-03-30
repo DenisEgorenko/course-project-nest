@@ -19,7 +19,7 @@ import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-u
 import { commentToOutputModel } from './commentsQuery.repository';
 import { UpdateCommentDto } from './dto/updateComment.dto';
 import { SetLikeStatusDto } from '../posts/dto/setLikeStatusDto';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/services/users.service';
 
 @Controller('comments')
 export class CommentsController {

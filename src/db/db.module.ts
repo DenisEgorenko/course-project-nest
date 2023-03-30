@@ -1,21 +1,39 @@
-import { Injectable, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './schemas/user.schema';
 import { Blog, BlogSchema } from './schemas/blogs.schema';
 import { Post, PostSchema } from './schemas/post.schema';
 import { Comment, CommentSchema } from './schemas/comments.schema';
 import { ConfigService } from '@nestjs/config';
-import { Security, SecuritySchema } from './schemas/security.schema';
+import {
+  Security,
+  SecuritySchema,
+} from '../modules/security/infrastructure/mongo/model/security.schema';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('database.mongo_uri'),
+        uri: configService.get<string>('database.mongo.mongo_uri'),
       }),
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('database.postgre.host'),
+        port: configService.get<number>('database.postgre.port'),
+        username: configService.get<string>('database.postgre.user'),
+        password: configService.get<string>('database.postgre.password'),
+        database: configService.get<string>('database.postgre.database'),
+        autoLoadEntities: true,
+        synchronize: true,
+        ssl: configService.get<boolean>('database.postgre.ssl'),
+      }),
+    }),
+
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
@@ -24,7 +42,6 @@ import { Security, SecuritySchema } from './schemas/security.schema';
     ]),
   ],
   exports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),

@@ -36,7 +36,7 @@ import {
   postToOutputModel,
 } from './models/postsToViewModel';
 import { BlogsService } from '../blogs/blogs.service';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/services/users.service';
 
 @Controller('posts')
 export class PostsController {

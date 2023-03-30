@@ -12,33 +12,31 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UsersQueryRepository } from '../usersQuery.repository';
-import { UsersService } from '../users.service';
+import { UsersService } from '../services/users.service';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import {
   usersToOutputModel,
   userToOutputModel,
-} from '../models/usersToViewModel';
-import { usersQueryModel } from '../models/usersQueryModel';
-import { CreateUserDto } from '../dto/createUser.dto';
+} from '../core/models/usersToViewModel';
+import { usersQueryModel } from '../core/models/usersQueryModel';
+import { CreateUserDto } from '../core/dto/createUser.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { BanUserCommand } from '../use-cases/banUser.useCase';
-import { BanStatusDto } from '../dto/banStatus.dto';
+import { BanStatusDto } from '../core/dto/banStatus.dto';
 import { CreateUserCommand } from '../use-cases/createUser.useCase';
+import { DeleteUserCommand } from '../use-cases/deleteUser.useCase';
 
 @Controller('sa/users')
-// @UseGuards(AuthGuard)
 export class UsersSaController {
   constructor(
     protected commandBus: CommandBus,
     protected usersService: UsersService,
-    protected usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @Get()
   @UseGuards(BasicAuthGuard)
   async getAllUsers(@Query() query: usersQueryModel) {
-    const items = await this.usersQueryRepository.getAllUsers(query);
+    const items = await this.usersService.getAllUsers(query);
 
     return usersToOutputModel(query, items.items, items.totalCount);
   }
@@ -68,11 +66,16 @@ export class UsersSaController {
     return userToOutputModel(newUser);
   }
 
-  @Delete(':id')
+  @Delete(':userId')
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
-  async delete(@Param('id') id: string) {
-    return this.usersService.deleteUser(id);
+  async delete(@Param('userId') userId: string) {
+    const user = await this.usersService.findUserByUserId(userId);
+    if (!user) {
+      throw new NotFoundException('no such user');
+    }
+
+    return await this.commandBus.execute(new DeleteUserCommand(userId));
   }
 
   @Put(':userId/ban')
@@ -88,6 +91,8 @@ export class UsersSaController {
       throw new NotFoundException();
     }
 
-    return this.commandBus.execute(new BanUserCommand(user, banStatusDto));
+    console.log(user);
+
+    return this.commandBus.execute(new BanUserCommand(userId, banStatusDto));
   }
 }

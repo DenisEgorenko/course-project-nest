@@ -1,10 +1,11 @@
 import { EmailAdapter } from './email-adapter';
-import { UserDocument } from '../db/schemas/user.schema';
+import { UserDocument } from '../modules/users/infrastructure/mongo/model/user.schema';
+import { UserBaseEntity } from '../modules/users/core/entity/user.entity';
 
 export const EmailManager = {
-  async sendRegistrationEmail(user: UserDocument) {
+  async sendRegistrationEmail(user: UserBaseEntity) {
     await EmailAdapter.sendEmail(
-      user.accountData.email,
+      user.email,
       'Registration Confirmation',
       `<h1>Thank for your registration</h1>
        <p>To finish registration please follow the link below:

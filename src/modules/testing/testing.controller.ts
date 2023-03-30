@@ -1,13 +1,15 @@
 import { Controller, Delete, HttpCode, Param, Res } from '@nestjs/common';
-import { TestingService } from './testing.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { ClearAllDataCommand } from './use-cases/clearAllData.useCase';
 
 @Controller('testing')
 export class TestingController {
-  constructor(protected testingService: TestingService) {}
+  constructor(protected commandBus: CommandBus) {}
 
   @Delete('all-data')
   @HttpCode(204)
   async delete() {
-    return this.testingService.deleteAllData();
+    console.log('testing');
+    return await this.commandBus.execute(new ClearAllDataCommand());
   }
 }

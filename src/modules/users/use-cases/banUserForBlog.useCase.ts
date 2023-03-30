@@ -1,14 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
 import {
   BlogsBanInfo,
-  User,
   UserDocument,
-  UserModel,
-} from '../../../db/schemas/user.schema';
-import { BanStatusDto } from '../dto/banStatus.dto';
-import { SecurityService } from '../../security/security.service';
-import { BanUserBlogStatusDto } from '../dto/banUserBlogStatus.dto';
+} from '../infrastructure/mongo/model/user.schema';
+import { BanUserBlogStatusDto } from '../core/dto/banUserBlogStatus.dto';
+import { IUsersRepository } from '../core/abstracts/users.repository.abstract';
 
 export class BanUserForBlogCommand {
   constructor(
@@ -21,29 +17,26 @@ export class BanUserForBlogCommand {
 export class BanUserForBlogHandler
   implements ICommandHandler<BanUserForBlogCommand>
 {
-  constructor(
-    @InjectModel(User.name)
-    protected userModel: UserModel,
-  ) {}
+  constructor(public readonly usersRepository: IUsersRepository) {}
   async execute(command: BanUserForBlogCommand): Promise<any> {
     const { user, banStatusDto } = command;
 
-    if (banStatusDto.isBanned) {
-      const banEntity: BlogsBanInfo = {
-        blogId: banStatusDto.blogId,
-        banDate: new Date(),
-        banReason: banStatusDto.banReason,
-      };
+    // if (banStatusDto.isBanned) {
+    //   const banEntity: BlogsBanInfo = {
+    //     blogId: banStatusDto.blogId,
+    //     banDate: new Date(),
+    //     banReason: banStatusDto.banReason,
+    //   };
+    //
+    //   user.addBlogBanInfo(banEntity);
+    // } else {
+    //   const filtered = user.blogsBanInfo.filter(
+    //     (ban) => ban.blogId !== banStatusDto.blogId,
+    //   );
+    //
+    //   user.blogsBanInfo = filtered;
+    // }
 
-      user.addBlogBanInfo(banEntity);
-    } else {
-      const filtered = user.blogsBanInfo.filter(
-        (ban) => ban.blogId !== banStatusDto.blogId,
-      );
-
-      user.blogsBanInfo = filtered;
-    }
-
-    await user.save();
+    await this.usersRepository.save(user);
   }
 }

@@ -1,26 +1,24 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument, UserModel } from '../../../db/schemas/user.schema';
-import { BanStatusDto } from '../dto/banStatus.dto';
-import { SecurityService } from '../../security/security.service';
+import { User } from '../infrastructure/mongo/model/user.schema';
+import { BanStatusDto } from '../core/dto/banStatus.dto';
+import { SecurityService } from '../../security/services/security.service';
+import { IUsersRepository } from '../core/abstracts/users.repository.abstract';
+import { UserBaseEntity } from '../core/entity/user.entity';
 
 export class BanUserCommand {
   constructor(
-    public readonly user: UserDocument,
+    public readonly userId: string,
     public readonly banStatusDto: BanStatusDto,
   ) {}
 }
 
 @CommandHandler(BanUserCommand)
-export class BanUSerHandler implements ICommandHandler<BanUserCommand> {
-  constructor(
-    @InjectModel(User.name)
-    protected userModel: UserModel,
-
-    protected securityService: SecurityService,
-  ) {}
+export class BanUserHandler implements ICommandHandler<BanUserCommand> {
+  constructor(public readonly usersRepository: IUsersRepository) {}
   async execute(command: BanUserCommand): Promise<any> {
-    const { user, banStatusDto } = command;
+    const { userId, banStatusDto } = command;
+
+    const user = await this.usersRepository.findUserByUserId(userId);
 
     if (banStatusDto.isBanned) {
       user.setBanStatus(banStatusDto.isBanned);
@@ -32,8 +30,8 @@ export class BanUSerHandler implements ICommandHandler<BanUserCommand> {
       user.setBanDate(null);
     }
 
-    await user.save();
+    await this.usersRepository.save(user);
 
-    await this.securityService.removeAllSecuritySessions(user.accountData.id);
+    // await this.securityService.removeAllSecuritySessions(user.id);
   }
 }

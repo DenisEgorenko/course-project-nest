@@ -16,10 +16,10 @@ import { CreateBlogHandler } from './use-cases/createBlog.useCase';
 import { CreateBlogPostHandler } from './use-cases/createBlogPost.useCase';
 import { UpdateBlogPostHandler } from './use-cases/updateBlogPost.useCase';
 import { DeleteBlogPostHandler } from './use-cases/deleteBlogPost.useCase';
-import { UsersService } from '../users/users.service';
 import { PasswordService } from '../../application/password.service';
 import { BanBlogHandler } from './use-cases/banBlog.useCase';
 import { AllBloggerCommentsQueryRepository } from '../comments/allBloggerCommentsQuery.repository';
+import { UsersModule } from '../users/users.module';
 
 const handlers = [
   UpdateBlogHandler,
@@ -31,7 +31,7 @@ const handlers = [
   BanBlogHandler,
 ];
 @Module({
-  imports: [DataBaseModule, CqrsModule],
+  imports: [DataBaseModule, CqrsModule, UsersModule],
   controllers: [BlogsController, BlogsBloggerController, BlogsSaController],
   providers: [
     BlogsService,
@@ -40,10 +40,8 @@ const handlers = [
     PostsQueryRepository,
     BasicStrategy,
     JwtService,
-    UsersService,
     PasswordService,
     AllBloggerCommentsQueryRepository,
-    UsersService,
     ...handlers,
   ],
 })
