@@ -26,10 +26,10 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       passwordSalt,
     );
 
-    // const emailConfirmationCode = uuidv4();
-    // const emailConfirmationExpirationDate = add(new Date(), {
-    //   hours: 1,
-    // });
+    const emailConfirmationCode = uuidv4();
+    const emailConfirmationExpirationDate = add(new Date(), {
+      hours: 1,
+    });
 
     const newUser = new UserBaseEntity();
 
@@ -38,8 +38,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     newUser.password = passwordHash;
     newUser.salt = passwordSalt;
     newUser.createdAt = new Date();
-    newUser.emailConfirmation.confirmationCode = null;
-    newUser.emailConfirmation.expirationDate = null;
+    newUser.emailConfirmation.confirmationCode = emailConfirmationCode;
+    newUser.emailConfirmation.expirationDate = emailConfirmationExpirationDate;
     newUser.emailConfirmation.isConfirmed = true;
 
     const createdUser = await this.usersRepository.save(newUser);
