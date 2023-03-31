@@ -21,6 +21,7 @@ import { SecurityModule } from '../security/security.module';
 import { JwtTokenManager } from './jwt-manager/jwt-token.manager';
 import { LogoutUserHandler } from './use-cases/logoutUser.useCase';
 import { RefreshTokenHandler } from './use-cases/refreshToken.useCase';
+import { ConfirmUserEmailHandler } from './use-cases/confirmUserEmail.useCase';
 
 const handlers = [
   RegistrationHandler,
@@ -30,6 +31,7 @@ const handlers = [
   LoginUserHandler,
   LogoutUserHandler,
   RefreshTokenHandler,
+  ConfirmUserEmailHandler,
 ];
 @Module({
   imports: [
