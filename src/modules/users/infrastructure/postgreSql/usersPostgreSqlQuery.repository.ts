@@ -117,17 +117,23 @@ export class UsersPostgreSqlQueryRepository {
           const queryArray = [];
 
           if (query.searchLoginTerm) {
-            queryArray.push({ field: 'login', value: query.searchLoginTerm });
+            queryArray.push({
+              field: 'login',
+              value: query.searchLoginTerm,
+            });
           }
 
           if (query.searchEmailTerm) {
-            queryArray.push({ field: 'email', value: query.searchEmailTerm });
+            queryArray.push({
+              field: 'email',
+              value: query.searchEmailTerm,
+            });
           }
 
           if (queryArray.length) {
             queryArray.map((value) => {
-              qb.orWhere(`user.${value.field} ILIKE :value`, {
-                value: `%${value.value}%`,
+              qb.orWhere(`user.${value.field} ILIKE :${value.field}`, {
+                [`${value.field}`]: `%${value.value}%`,
               });
             });
           } else {
