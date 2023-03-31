@@ -42,7 +42,7 @@ const handlers = [
       secret: 'secret',
     }),
     ThrottlerModule.forRoot({
-      ttl: 10,
+      ttl: 9,
       limit: 5,
     }),
     CqrsModule,
