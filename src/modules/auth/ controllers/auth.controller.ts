@@ -51,7 +51,8 @@ export class AuthController {
   @UseGuards(ThrottlerGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   async login(@Request() req, @Res({ passthrough: true }) response: Response) {
-    if (req.user.banStatus) {
+    console.log(req.user);
+    if (req.user.userBanInfo.banStatus) {
       throw new UnauthorizedException();
     }
 

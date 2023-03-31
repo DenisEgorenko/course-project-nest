@@ -80,8 +80,8 @@ export class UsersPostgreSqlQueryRepository {
 
           if (queryArray.length) {
             queryArray.map((value) => {
-              qb.orWhere(`user.${value.field} ILIKE :field`, {
-                field: `%${value.value}%`,
+              qb.orWhere(`user.${value.field} ILIKE :value`, {
+                value: `%${value.value}%`,
               });
             });
           } else {
@@ -120,8 +120,8 @@ export class UsersPostgreSqlQueryRepository {
 
           if (queryArray.length) {
             queryArray.map((value) => {
-              qb.orWhere(`user.${value.field} ILIKE :field`, {
-                field: `%${value.value}%`,
+              qb.orWhere(`user.${value.field} ILIKE :value`, {
+                value: `%${value.value}%`,
               });
             });
           } else {
