@@ -36,7 +36,7 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
         }
       })
       .andWhere((qb) => {
-        if (showBanned !== null) {
+        if (showBanned !== undefined) {
           qb.where('blog.isBanned = :showBanned', {
             showBanned,
           });
