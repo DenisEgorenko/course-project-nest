@@ -20,11 +20,12 @@ import { BlogsService } from '../blogs.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { BanStatusDto } from './dto/banStatus.dto';
 import { BanBlogCommand } from '../use-cases/banBlog.useCase';
+import { IBlogsQueryRepository } from '../core/abstracts/blogsQuery.repository.abstract';
 
 @Controller('sa/blogs')
 export class BlogsSaController {
   constructor(
-    protected blogsQueryRepository: BlogsQueryRepository,
+    protected blogsQueryRepository: IBlogsQueryRepository,
     protected blogService: BlogsService,
     protected commandBus: CommandBus,
   ) {}
@@ -44,7 +45,7 @@ export class BlogsSaController {
   @Get()
   @UseGuards(BasicAuthGuard)
   async getAllBlogs(@Query() query: blogsQueryModel) {
-    const result = await this.blogsQueryRepository.getAllBlogs(query);
+    const result = await this.blogsQueryRepository.getAllBlogs(query, true);
 
     return blogsToOutputModelForSA(query, result.items, result.totalCount);
   }
@@ -64,6 +65,6 @@ export class BlogsSaController {
       throw new NotFoundException();
     }
 
-    await this.commandBus.execute(new BanBlogCommand(blog, banStatusDto));
+    await this.commandBus.execute(new BanBlogCommand(blogId, banStatusDto));
   }
 }

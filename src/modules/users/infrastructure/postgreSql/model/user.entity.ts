@@ -10,6 +10,7 @@ import {
   Relation,
 } from 'typeorm';
 import { Security } from '../../../../security/infrastructure/postgreSql/model/security.entity';
+import { Blog } from '../../../../blogs/infrastructure/postgreSql/model/blog.entity';
 
 /// Schema
 
@@ -55,16 +56,20 @@ export class PasswordRecovery {
 export class BlogsBanInfo {
   @PrimaryGeneratedColumn()
   id: string;
-  @ManyToOne(() => User, (user) => user.blogsBanInfo, {
-    onDelete: 'CASCADE',
-  })
-  user: Relation<User>;
   @Column()
-  blogId: string;
+  isBanned: boolean;
   @Column()
   banReason: string;
   @Column()
   banDate: Date;
+  @ManyToOne(() => User, (user) => user.blogsBanInfo, {
+    onDelete: 'CASCADE',
+  })
+  user: Relation<User>;
+  @ManyToOne(() => Blog, (blog) => blog.blogsBanInfo, {
+    onDelete: 'CASCADE',
+  })
+  blog: Relation<Blog>;
 }
 @Entity()
 export class UserBanInfo {
@@ -131,6 +136,12 @@ export class User implements UserBaseEntity {
     onDelete: 'CASCADE',
   })
   securitySessions: Relation<Security>[];
+
+  @OneToMany(() => Blog, (blog) => blog.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  blogs: Relation<Blog>[];
 
   setRecoveryCode(recoveryCode: string) {
     this.passwordRecovery.recoveryCode = recoveryCode;

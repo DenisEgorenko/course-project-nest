@@ -5,19 +5,13 @@ export abstract class IUsersRepository {
 
   // find user functions
 
-  abstract findUserByLoginOrEmail(
-    loginOrEmail: string,
-  ): Promise<UserBaseEntity>;
+  abstract findUserByLoginOrEmail(loginOrEmail: string);
 
   abstract findUserByUserId(userId: string);
 
-  abstract findUserByRecoveryCode(
-    recoveryCode: string,
-  ): Promise<UserBaseEntity>;
+  abstract findUserByRecoveryCode(recoveryCode: string);
 
-  abstract findUserByConfirmationCode(
-    confirmationCode: string,
-  ): Promise<UserBaseEntity>;
+  abstract findUserByConfirmationCode(confirmationCode: string);
 
   // get user's info
 

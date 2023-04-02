@@ -34,6 +34,15 @@ import { IUsersQueryRepository } from './core/abstracts/usersQuery.repository.ab
 import { UsersPostgreSqlQueryRepository } from './infrastructure/postgreSql/usersPostgreSqlQuery.repository';
 import { Security } from '../security/infrastructure/postgreSql/model/security.entity';
 import { SecurityModule } from '../security/security.module';
+import { IBlogsRepository } from '../blogs/core/abstracts/blogs.repository.abstract';
+import { BlogsSqlRepository } from '../blogs/infrastructure/postgreSql/blogs.sql.repository';
+import { Blog } from '../blogs/infrastructure/postgreSql/model/blog.entity';
+import { IBlogsBanInfoRepository } from '../blogs/core/abstracts/blogsBanInfo.repository.abstract';
+import { BlogsBanInfoSqlRepository } from '../blogs/infrastructure/postgreSql/blogsBanInfo.sql.repository';
+import { IBlogsBannedUsersRepository } from '../blogs/core/abstracts/blogsBannedUsers.repository.abstract';
+import { BlogsBannedUsersQuerySqlRepository } from '../blogs/infrastructure/postgreSql/blogsBannedUsersQuery.sql.repository';
+import { IBlogsQueryRepository } from '../blogs/core/abstracts/blogsQuery.repository.abstract';
+import { BlogsQuerySqlRepository } from '../blogs/infrastructure/postgreSql/blogsQuery.sql.repository';
 
 const handlers = [
   BanUserHandler,
@@ -54,6 +63,7 @@ const handlers = [
       InvalidRefreshTokens,
       UserBanInfo,
       Security,
+      Blog,
     ]),
     SecurityModule,
     CqrsModule,
@@ -62,7 +72,6 @@ const handlers = [
   providers: [
     UsersService,
     PasswordService,
-    // UsersQueryRepository,
     BasicStrategy,
     SecurityService,
     JwtService,
@@ -74,6 +83,22 @@ const handlers = [
     {
       provide: IUsersQueryRepository,
       useClass: UsersPostgreSqlQueryRepository,
+    },
+    {
+      provide: IBlogsRepository,
+      useClass: BlogsSqlRepository,
+    },
+    {
+      provide: IBlogsBanInfoRepository,
+      useClass: BlogsBanInfoSqlRepository,
+    },
+    {
+      provide: IBlogsBannedUsersRepository,
+      useClass: BlogsBannedUsersQuerySqlRepository,
+    },
+    {
+      provide: IBlogsQueryRepository,
+      useClass: BlogsQuerySqlRepository,
     },
     ...handlers,
   ],

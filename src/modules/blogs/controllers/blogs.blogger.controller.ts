@@ -32,13 +32,14 @@ import { CreateBlogPostCommand } from '../use-cases/createBlogPost.useCase';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { PostsService } from '../../posts/posts.service';
-import { UpdateBlogPostCommand } from '../use-cases/updateBlogPost.useCase';
+import { UpdateBlogPostCommand } from '../../posts/use-cases/updateBlogPost.useCase';
 import { DeleteBlogPostCommand } from '../use-cases/deleteBlogPost.useCase';
 import { blogsQueryModel } from '../models/blogsQueryModel';
 import { BlogsQueryRepository } from '../blogsQuery.repository';
 import { BlogsCommentsQueryModel } from '../models/blogsCommentsQueryModel';
 import { AllBloggerCommentsQueryRepository } from '../../comments/allBloggerCommentsQuery.repository';
 import { UsersService } from '../../users/services/users.service';
+import { CreatePostCommand } from '../../posts/use-cases/createPost.useCase';
 
 @Controller('blogger/blogs')
 export class BlogsBloggerController {
@@ -47,31 +48,44 @@ export class BlogsBloggerController {
     private blogsService: BlogsService,
     private postsService: PostsService,
     private usersService: UsersService,
-    private blogsQueryRepository: BlogsQueryRepository,
-    private allBloggerCommentsQueryRepository: AllBloggerCommentsQueryRepository,
   ) {}
 
+  // Create Blog
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async createBlog(
+    @Body() createBlogDto: CreateBlogDto,
+    @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
+  ) {
+    const newBlog = await this.commandBus.execute(
+      new CreateBlogCommand(createBlogDto, jwtATPayload.user.userId),
+    );
+
+    console.log(newBlog);
+    return blogToOutputModel(newBlog);
+  }
+
   // Update Blog by Id
-  @Put(':id')
+  @Put(':blogId')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async updateBlog(
-    @Param('id') id: string,
+    @Param('blogId') blogId: string,
     @Body() updateBlogDto: UpdateBlogDto,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
-    const blog = await this.blogsService.getBlogById(id);
+    const blog = await this.blogsService.getBlogById(blogId);
 
     if (!blog) {
       throw new NotFoundException('no such blog');
     }
 
-    if (blog.userId !== jwtATPayload.user.userId) {
+    if (blog.user.id !== jwtATPayload.user.userId) {
       throw new ForbiddenException();
     }
 
     return await this.commandBus.execute(
-      new UpdateBlogCommand(blog, updateBlogDto),
+      new UpdateBlogCommand(blogId, updateBlogDto),
     );
   }
 
@@ -89,28 +103,11 @@ export class BlogsBloggerController {
       throw new NotFoundException('no such blog');
     }
 
-    if (blog.userId !== jwtATPayload.user.userId) {
+    if (blog.user.id !== jwtATPayload.user.userId) {
       throw new ForbiddenException();
     }
 
     return await this.commandBus.execute(new DeleteBlogCommand(blogId));
-  }
-
-  // Create Blog
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  async createBlog(
-    @Body() createBlogDto: CreateBlogDto,
-    @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
-  ) {
-    const newBlog = await this.commandBus.execute(
-      new CreateBlogCommand(
-        createBlogDto,
-        jwtATPayload.user.userId,
-        jwtATPayload.user.login,
-      ),
-    );
-    return blogToOutputModel(newBlog);
   }
 
   // Return all User's blogs
@@ -120,13 +117,13 @@ export class BlogsBloggerController {
     @Query() query: blogsQueryModel,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
-    const result = await this.blogsQueryRepository.getAllBlogs(
+    const result = await this.blogsService.getAllBlogs(
       query,
-      [],
+      true,
       jwtATPayload.user.userId,
     );
 
-    return blogsToOutputModel(query, result.items, result.totalCount, []);
+    return blogsToOutputModel(query, result.items, result.totalCount);
   }
 
   //  Create new post for blog
@@ -143,19 +140,15 @@ export class BlogsBloggerController {
       throw new NotFoundException('no such blog');
     }
 
-    if (blog.userId !== jwtATPayload.user.userId) {
+    if (blog.user.id !== jwtATPayload.user.userId) {
       throw new ForbiddenException();
     }
 
     const newPost = await this.commandBus.execute(
-      new CreateBlogPostCommand(
-        createPostDto,
-        blogId,
-        jwtATPayload.user.userId,
-      ),
+      new CreatePostCommand(createPostDto, blogId),
     );
 
-    return postToOutputModel(newPost, jwtATPayload.user.userId, []);
+    return postToOutputModel(newPost);
   }
 
   //  Update post
@@ -177,15 +170,17 @@ export class BlogsBloggerController {
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
-      throw new NotFoundException('no such blog');
+      throw new NotFoundException('no such post');
     }
 
-    if (post.userId !== jwtATPayload.user.userId) {
+    console.log(post);
+
+    if (post.blog.user.id !== jwtATPayload.user.userId) {
       throw new ForbiddenException();
     }
 
     await this.commandBus.execute(
-      new UpdateBlogPostCommand(post, updatePostDto),
+      new UpdateBlogPostCommand(postId, updatePostDto),
     );
   }
 
@@ -210,7 +205,7 @@ export class BlogsBloggerController {
       throw new NotFoundException('no such blog');
     }
 
-    if (post.userId !== jwtATPayload.user.userId) {
+    if (post.blog.user.id !== jwtATPayload.user.userId) {
       throw new ForbiddenException();
     }
 
@@ -225,25 +220,23 @@ export class BlogsBloggerController {
     @Query() blogsCommentsQueryModel: BlogsCommentsQueryModel,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
-    const allUsersPosts = await this.postsService.getAllBloggerPosts(
-      jwtATPayload.user.userId,
-    );
-
-    const bannedUsers = await this.usersService.getAllBannedUsersIds();
-
-    const allComments =
-      await this.allBloggerCommentsQueryRepository.getAllBloggerPostComments(
-        blogsCommentsQueryModel,
-        jwtATPayload.user.userId,
-        allUsersPosts,
-      );
-
-    return this.allBloggerCommentsQueryRepository.allBloggerPostsCommentsToOutputModel(
-      blogsCommentsQueryModel,
-      allComments.items,
-      allComments.totalCount,
-      jwtATPayload.user.userId,
-      bannedUsers,
-    );
+    // const allUsersPosts = await this.postsService.getAllBloggerPosts(
+    //   jwtATPayload.user.userId,
+    // );
+    // const bannedUsers = await this.usersService.getAllBannedUsersIds();
+    // const allComments =
+    //   await this.allBloggerCommentsQueryRepository.getAllBloggerPostComments(
+    //     blogsCommentsQueryModel,
+    //     jwtATPayload.user.userId,
+    //     allUsersPosts,
+    //   );
+    //
+    // return this.allBloggerCommentsQueryRepository.allBloggerPostsCommentsToOutputModel(
+    //   blogsCommentsQueryModel,
+    //   allComments.items,
+    //   allComments.totalCount,
+    //   jwtATPayload.user.userId,
+    //   bannedUsers,
+    // );
   }
 }

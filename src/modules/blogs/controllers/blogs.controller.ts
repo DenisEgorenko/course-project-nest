@@ -20,36 +20,26 @@ import {
 } from '../models/blogsToViewModel';
 import { postsToOutputModel } from '../../posts/models/postsToViewModel';
 import { UsersService } from '../../users/services/users.service';
+import { PostsService } from '../../posts/posts.service';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     protected blogsService: BlogsService,
-    protected usersService: UsersService,
-    protected blogsQueryRepository: BlogsQueryRepository,
+    protected postsService: PostsService,
     protected postsQueryRepository: PostsQueryRepository,
   ) {}
 
   @Get()
   async getAllBlogs(@Query() query: blogsQueryModel) {
-    const bannedBlogs = await this.blogsService.getAllBannedBlogsIds();
+    const result = await this.blogsService.getAllBlogs(query, false);
 
-    const result = await this.blogsQueryRepository.getAllBlogs(
-      query,
-      bannedBlogs,
-    );
-
-    return blogsToOutputModel(
-      query,
-      result.items,
-      result.totalCount,
-      bannedBlogs,
-    );
+    return blogsToOutputModel(query, result.items, result.totalCount);
   }
 
-  @Get(':id')
-  async getBlogById(@Param('id') id: string) {
-    const blog = await this.blogsService.getBlogById(id);
+  @Get(':blogId')
+  async getBlogById(@Param('blogId') blogId: string) {
+    const blog = await this.blogsService.getBlogById(blogId);
 
     if (!blog) {
       throw new NotFoundException();
@@ -74,21 +64,8 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    const bannedUsers = await this.usersService.getAllBannedUsersIds();
+    const items = await this.postsService.getAllPosts(query, blogId);
 
-    const items = await this.postsQueryRepository.getAllPosts(
-      query,
-      jwtRTPayload.user.userId,
-      bannedUsers,
-      blogId,
-    );
-
-    return postsToOutputModel(
-      query,
-      items.items,
-      items.totalCount,
-      jwtRTPayload.user.userId,
-      bannedUsers,
-    );
+    return postsToOutputModel(query, items.items, items.totalCount);
   }
 }

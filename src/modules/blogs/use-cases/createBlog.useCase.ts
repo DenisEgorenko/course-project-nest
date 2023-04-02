@@ -1,38 +1,38 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  Blog,
-  BlogDocument,
-  BlogModel,
-} from '../../../db/schemas/blogs.schema';
-import { UpdateBlogDto } from '../controllers/dto/updateBlog.dto';
 import { CreateBlogDto } from '../controllers/dto/createBlog.dto';
-import { InjectModel } from '@nestjs/mongoose';
+import { BlogBaseEntity } from '../core/entity/blog.entity';
+import { IUsersRepository } from '../../users/core/abstracts/users.repository.abstract';
+import { IBlogsRepository } from '../core/abstracts/blogs.repository.abstract';
+import { Blog } from '../infrastructure/postgreSql/model/blog.entity';
 
 export class CreateBlogCommand {
   constructor(
     public readonly createBlogDto: CreateBlogDto,
     public readonly userId: string,
-    public readonly userLogin: string,
   ) {}
 }
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
   constructor(
-    @InjectModel(Blog.name)
-    protected blogModel: BlogModel,
+    protected usersRepository: IUsersRepository,
+    protected blogsRepository: IBlogsRepository,
   ) {}
-  async execute(command: CreateBlogCommand): Promise<BlogDocument> {
-    const { createBlogDto, userId, userLogin } = command;
-    const newBlog = await this.blogModel.createBlog(
-      createBlogDto.name,
-      createBlogDto.description,
-      createBlogDto.websiteUrl,
-      this.blogModel,
-      userId,
-      userLogin,
-    );
+  async execute(command: CreateBlogCommand) {
+    const { createBlogDto, userId } = command;
 
-    return await newBlog.save();
+    const user = await this.usersRepository.findUserByUserId(userId);
+
+    const newBlog = new Blog();
+    newBlog.createdAt = new Date();
+    newBlog.name = createBlogDto.name;
+    newBlog.description = createBlogDto.description;
+    newBlog.websiteUrl = createBlogDto.websiteUrl;
+    newBlog.isBanned = false;
+    newBlog.banDate = null;
+
+    newBlog.user = user;
+
+    return await this.blogsRepository.save(newBlog);
   }
 }

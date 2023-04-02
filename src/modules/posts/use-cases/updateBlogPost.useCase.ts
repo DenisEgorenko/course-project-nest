@@ -1,12 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument, PostModel } from '../../../db/schemas/post.schema';
-import { CreatePostDto } from '../controllers/dto/createPost.dto';
-import { UpdatePostDto } from '../controllers/dto/updatePost.dto';
+import { PostDocument } from '../infrastructure/mongo/model/post.schema';
+import { UpdatePostDto } from '../../blogs/controllers/dto/updatePost.dto';
+import { IPostsRepository } from '../core/abstracts/posts.repository.abstract';
 
 export class UpdateBlogPostCommand {
   constructor(
-    public readonly post: PostDocument,
+    public readonly postId: string,
     public readonly updatePostDto: UpdatePostDto,
   ) {}
 }
@@ -15,16 +14,16 @@ export class UpdateBlogPostCommand {
 export class UpdateBlogPostHandler
   implements ICommandHandler<UpdateBlogPostCommand>
 {
-  constructor(
-    @InjectModel(Post.name)
-    protected postModel: PostModel,
-  ) {}
+  constructor(protected postsRepository: IPostsRepository) {}
   async execute(command: UpdateBlogPostCommand): Promise<PostDocument> {
-    const { post, updatePostDto } = command;
+    const { postId, updatePostDto } = command;
+
+    const post = await this.postsRepository.getPostById(postId);
 
     post.setTitle(updatePostDto.title);
     post.setShortDescription(updatePostDto.shortDescription);
     post.setContent(updatePostDto.content);
-    return await post.save();
+
+    return await this.postsRepository.save(post);
   }
 }

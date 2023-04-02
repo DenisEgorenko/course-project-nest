@@ -53,6 +53,8 @@ export class BlogsBanInfo {
   @Prop({ required: true })
   banReason: string;
   @Prop({ required: true })
+  isBanned: boolean;
+  @Prop({ required: true })
   banDate: Date;
 }
 @Schema({ _id: false })

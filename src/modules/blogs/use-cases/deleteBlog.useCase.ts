@@ -1,11 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  Blog,
-  BlogDocument,
-  BlogModel,
-} from '../../../db/schemas/blogs.schema';
-import { UpdateBlogDto } from '../controllers/dto/updateBlog.dto';
+import { Blog, BlogModel } from '../infrastructure/mongo/model/blogs.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { IBlogsRepository } from '../core/abstracts/blogs.repository.abstract';
 
 export class DeleteBlogCommand {
   constructor(public readonly blogId: string) {}
@@ -13,14 +9,12 @@ export class DeleteBlogCommand {
 
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogHandler implements ICommandHandler<DeleteBlogCommand> {
-  constructor(
-    @InjectModel(Blog.name)
-    protected blogModel: BlogModel,
-  ) {}
+  constructor(protected blogsRepository: IBlogsRepository) {}
+
   async execute(command: DeleteBlogCommand) {
     const { blogId } = command;
 
-    const deletedBlog = await this.blogModel.deleteOne({ id: blogId });
+    const deletedBlog = await this.blogsRepository.deleteBlogById(blogId);
 
     return deletedBlog;
   }

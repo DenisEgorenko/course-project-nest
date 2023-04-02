@@ -1,26 +1,23 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument, PostModel } from '../../../db/schemas/post.schema';
-import { CreatePostDto } from '../controllers/dto/createPost.dto';
-import { UpdatePostDto } from '../controllers/dto/updatePost.dto';
-import { BlogDocument } from '../../../db/schemas/blogs.schema';
+import { BlogDocument } from '../infrastructure/mongo/model/blogs.schema';
 import { BanStatusDto } from '../controllers/dto/banStatus.dto';
+import { BlogBaseEntity } from '../core/entity/blog.entity';
+import { IBlogsRepository } from '../core/abstracts/blogs.repository.abstract';
 
 export class BanBlogCommand {
   constructor(
-    public readonly blog: BlogDocument,
+    public readonly blogId: string,
     public readonly banStatusDto: BanStatusDto,
   ) {}
 }
 
 @CommandHandler(BanBlogCommand)
 export class BanBlogHandler implements ICommandHandler<BanBlogCommand> {
-  constructor(
-    @InjectModel(Post.name)
-    protected postModel: PostModel,
-  ) {}
+  constructor(protected blogsRepository: IBlogsRepository) {}
   async execute(command: BanBlogCommand): Promise<BlogDocument> {
-    const { blog, banStatusDto } = command;
+    const { blogId, banStatusDto } = command;
+
+    const blog = await this.blogsRepository.getBlogById(blogId);
 
     if (banStatusDto.isBanned) {
       blog.setIsBanned(banStatusDto.isBanned);
@@ -30,6 +27,6 @@ export class BanBlogHandler implements ICommandHandler<BanBlogCommand> {
       blog.setBannedDate(null);
     }
 
-    return await blog.save();
+    return await this.blogsRepository.save(blog);
   }
 }

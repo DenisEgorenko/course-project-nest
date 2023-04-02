@@ -1,24 +1,22 @@
-import { BlogDocument } from '../../../db/schemas/blogs.schema';
+import { BlogDocument } from '../infrastructure/mongo/model/blogs.schema';
 import { blogsQueryModel } from './blogsQueryModel';
+import { BlogBaseEntity } from '../core/entity/blog.entity';
 
 export const blogsToOutputModel = (
   query: blogsQueryModel,
   items: BlogDocument[],
   totalCount: number,
-  bannedBlogs: string[],
 ): blogsOutputModel => {
   const pageSize: number = query.pageSize ? +query.pageSize : 10;
   const pagesCount = Math.ceil(totalCount / pageSize);
   const page: number = query.pageNumber ? +query.pageNumber : 1;
-
-  const notBannedBlogs = items.filter((blog) => !bannedBlogs.includes(blog.id));
 
   return {
     pagesCount: pagesCount,
     page: page,
     pageSize: pageSize,
     totalCount: totalCount,
-    items: notBannedBlogs.map((item) => blogToOutputModel(item)),
+    items: items.map((item) => blogToOutputModel(item)),
   };
 };
 
@@ -40,7 +38,7 @@ export const blogsToOutputModelForSA = (
   };
 };
 
-export const blogToOutputModel = (blog: BlogDocument): blogOutputModel => {
+export const blogToOutputModel = (blog: BlogBaseEntity): blogOutputModel => {
   return {
     id: blog.id,
     name: blog.name,
@@ -51,9 +49,7 @@ export const blogToOutputModel = (blog: BlogDocument): blogOutputModel => {
   };
 };
 
-export const blogToOutputModelForSA = (
-  blog: BlogDocument,
-): blogOutputModelForSA => {
+export const blogToOutputModelForSA = (blog: any): blogOutputModelForSA => {
   return {
     id: blog.id,
     name: blog.name,
@@ -62,8 +58,8 @@ export const blogToOutputModelForSA = (
     createdAt: blog.createdAt,
     isMembership: false,
     blogOwnerInfo: {
-      userId: blog.userId,
-      userLogin: blog.userLogin,
+      userId: blog.user.id,
+      userLogin: blog.user.login,
     },
     banInfo: {
       isBanned: blog.isBanned,

@@ -28,6 +28,7 @@ export class UsersPostgreSqlRepository implements IUsersRepository {
         blogsBanInfo: true,
         emailConfirmation: true,
         securitySessions: true,
+        blogs: true,
       },
       where: {
         id: userId,

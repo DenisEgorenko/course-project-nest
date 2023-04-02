@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   ForbiddenException,
   Get,
   HttpCode,
@@ -12,31 +11,32 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
-import { CreatePostDto } from '../blogs/controllers/dto/createPost.dto';
-import { UpdatePostDto } from '../blogs/controllers/dto/updatePost.dto';
-import { PostsQueryRepository } from './postsQuery.repository';
-import { postsQueryModel } from './models/postsQueryModel';
-import { commentsQueryModel } from '../comments/models/commentsQueryModel';
+import { PostsService } from '../posts.service';
+import { PostsQueryRepository } from '../postsQuery.repository';
+import { postsQueryModel } from '../models/postsQueryModel';
+import { commentsQueryModel } from '../../comments/models/commentsQueryModel';
 import {
   CommentsQueryRepository,
   commentToOutputModel,
-} from '../comments/commentsQuery.repository';
-import { CreateCommentDto } from '../comments/dto/createComment.dto';
-import { CommentsService } from '../comments/comments.service';
-import { SetLikeStatusDto } from './dto/setLikeStatusDto';
-import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { GetCurrentATJwtContext } from '../../shared/decorators/get-At-current-user.decorator';
-import { JwtATPayload, JwtRTPayload } from '../auth/interfaces/jwtPayload.type';
-import { AuthGuardForLikes } from '../auth/guards/auth-guard-for-likes.guard';
-import { GetCurrentRTJwtContext } from '../../shared/decorators/get-Rt-current-user.decorator';
+} from '../../comments/commentsQuery.repository';
+import { CreateCommentDto } from '../../comments/dto/createComment.dto';
+import { CommentsService } from '../../comments/comments.service';
+import { SetLikeStatusDto } from '../dto/setLikeStatusDto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { GetCurrentATJwtContext } from '../../../shared/decorators/get-At-current-user.decorator';
+import {
+  JwtATPayload,
+  JwtRTPayload,
+} from '../../auth/interfaces/jwtPayload.type';
+import { AuthGuardForLikes } from '../../auth/guards/auth-guard-for-likes.guard';
+import { GetCurrentRTJwtContext } from '../../../shared/decorators/get-Rt-current-user.decorator';
 import {
   postsToOutputModel,
   postToOutputModel,
-} from './models/postsToViewModel';
-import { BlogsService } from '../blogs/blogs.service';
-import { UsersService } from '../users/services/users.service';
+} from '../models/postsToViewModel';
+import { BlogsService } from '../../blogs/blogs.service';
+import { UsersService } from '../../users/services/users.service';
+import { IPostsQueryRepository } from '../core/abstracts/postsQuery.repository.abstract';
 
 @Controller('posts')
 export class PostsController {
@@ -46,7 +46,7 @@ export class PostsController {
     protected usersService: UsersService,
     protected blogsService: BlogsService,
 
-    protected postsQueryRepository: PostsQueryRepository,
+    protected postsQueryRepository: IPostsQueryRepository,
     protected commentsQueryRepository: CommentsQueryRepository,
   ) {}
 
@@ -58,21 +58,9 @@ export class PostsController {
     @Query() query: postsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
-    const bannedUsers = await this.usersService.getAllBannedUsersIds();
+    const items = await this.postsService.getAllPosts(query);
 
-    const items = await this.postsQueryRepository.getAllPosts(
-      query,
-      jwtRTPayload.user.userId,
-      bannedUsers,
-    );
-
-    return postsToOutputModel(
-      query,
-      items.items,
-      items.totalCount,
-      jwtRTPayload.user.userId,
-      bannedUsers,
-    );
+    return postsToOutputModel(query, items.items, items.totalCount);
   }
 
   @Get(':postId')
@@ -81,20 +69,20 @@ export class PostsController {
     @Param('postId') postId: string,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
+    console.log('here');
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
       throw new NotFoundException();
     }
 
-    const bannedBlogs = await this.blogsService.getAllBannedBlogsIds();
+    console.log(post);
 
-    if (bannedBlogs.includes(post.blogId)) {
+    if (post.blog.isBanned) {
       throw new NotFoundException();
     }
-    const bannedUsers = await this.usersService.getAllBannedUsersIds();
 
-    return postToOutputModel(post, jwtRTPayload.user.userId, bannedUsers);
+    return postToOutputModel(post);
   }
 
   // Post's comments

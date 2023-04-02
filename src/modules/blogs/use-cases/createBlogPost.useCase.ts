@@ -1,6 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument, PostModel } from '../../../db/schemas/post.schema';
+import {
+  Post,
+  PostDocument,
+  PostModel,
+} from '../../posts/infrastructure/mongo/model/post.schema';
 import { CreatePostDto } from '../controllers/dto/createPost.dto';
 
 export class CreateBlogPostCommand {

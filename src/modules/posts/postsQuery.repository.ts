@@ -2,9 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument, PostStatics } from '../../db/schemas/post.schema';
+import {
+  Post,
+  PostDocument,
+  PostStatics,
+} from './infrastructure/mongo/model/post.schema';
 import { postsQueryModel } from './models/postsQueryModel';
-import { Blog, BlogDocument } from '../../db/schemas/blogs.schema';
+import {
+  Blog,
+  BlogDocument,
+} from '../blogs/infrastructure/mongo/model/blogs.schema';
 
 @Injectable()
 export class PostsQueryRepository {

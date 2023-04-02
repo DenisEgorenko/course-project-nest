@@ -1,4 +1,4 @@
-import { BlogDocument } from '../../../db/schemas/blogs.schema';
+import { BlogDocument } from '../infrastructure/mongo/model/blogs.schema';
 
 export type blogsQueryModel = {
   pageNumber: number;

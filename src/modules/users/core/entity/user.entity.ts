@@ -1,3 +1,5 @@
+import { BlogBaseEntity } from '../../../blogs/core/entity/blog.entity';
+
 class EmailConfirmation {
   id: string;
   confirmationCode: string | null;
@@ -16,8 +18,8 @@ class PasswordRecovery {
 
 export class BlogsBanInfo {
   id: string;
-  blogId: string;
   banReason: string;
+  isBanned: boolean;
   banDate: Date;
 }
 

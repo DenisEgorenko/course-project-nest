@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Post, PostDocument, PostModel } from '../../db/schemas/post.schema';
+import {
+  Post,
+  PostDocument,
+  PostModel,
+} from '../posts/infrastructure/mongo/model/post.schema';
 import {
   Comment,
   CommentDocument,
