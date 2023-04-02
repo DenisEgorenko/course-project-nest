@@ -39,17 +39,6 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
       )
       .andWhere(
         new Brackets((qb) => {
-          if (userId) {
-            qb.where('user.id = :userId', {
-              userId,
-            });
-          } else {
-            return;
-          }
-        }),
-      )
-      .andWhere(
-        new Brackets((qb) => {
           const queryArray = [];
 
           if (query.searchNameTerm) {
@@ -62,7 +51,7 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
           if (queryArray.length) {
             queryArray.map((value) => {
               qb.orWhere(`blog.${value.field} ILIKE :${value.field}`, {
-                [`${value.field}`]: `%${value.value}%`,
+                [`${value.field}`]: `%${value.name}%`,
               });
             });
           } else {
@@ -70,9 +59,18 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
           }
         }),
       )
+      .andWhere(
+        new Brackets((qb) => {
+          if (userId) {
+            qb.orWhere('user.id = :userId', {
+              userId,
+            });
+          } else {
+            return;
+          }
+        }),
+      )
       .getCount();
-
-    console.log(totalCount);
 
     const items = await this.blogsRepository
       .createQueryBuilder('blog')
