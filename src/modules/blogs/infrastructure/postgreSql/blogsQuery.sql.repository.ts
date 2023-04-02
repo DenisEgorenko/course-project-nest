@@ -26,24 +26,28 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
     const totalCount = await this.blogsRepository
       .createQueryBuilder('blog')
       .leftJoinAndSelect('blog.user', 'user')
-      .where((qb) => {
-        if (userId) {
-          qb.where('user.id = :userId', {
-            userId,
-          });
-        } else {
-          return;
-        }
-      })
-      .andWhere((qb) => {
-        if (showBanned !== undefined) {
-          qb.where('blog.isBanned = :showBanned', {
-            showBanned,
-          });
-        } else {
-          return;
-        }
-      })
+      .where(
+        new Brackets((qb) => {
+          if (!showBanned) {
+            qb.where('blog.isBanned = :showBanned', {
+              showBanned,
+            });
+          } else {
+            return;
+          }
+        }),
+      )
+      .andWhere(
+        new Brackets((qb) => {
+          if (userId) {
+            qb.where('user.id = :userId', {
+              userId,
+            });
+          } else {
+            return;
+          }
+        }),
+      )
       .andWhere(
         new Brackets((qb) => {
           const queryArray = [];
@@ -68,27 +72,33 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
       )
       .getCount();
 
+    console.log(totalCount);
+
     const items = await this.blogsRepository
       .createQueryBuilder('blog')
       .leftJoinAndSelect('blog.user', 'user')
-      .where((qb) => {
-        if (userId) {
-          qb.where('user.id = :userId', {
-            userId,
-          });
-        } else {
-          return;
-        }
-      })
-      .andWhere((qb) => {
-        if (showBanned !== null) {
-          qb.where('blog.isBanned = :showBanned', {
-            showBanned,
-          });
-        } else {
-          return;
-        }
-      })
+      .where(
+        new Brackets((qb) => {
+          if (!showBanned) {
+            qb.where('blog.isBanned = :showBanned', {
+              showBanned,
+            });
+          } else {
+            return;
+          }
+        }),
+      )
+      .andWhere(
+        new Brackets((qb) => {
+          if (userId) {
+            qb.where('user.id = :userId', {
+              userId,
+            });
+          } else {
+            return;
+          }
+        }),
+      )
       .andWhere(
         new Brackets((qb) => {
           const queryArray = [];
@@ -96,7 +106,7 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
           if (query.searchNameTerm) {
             queryArray.push({
               field: 'name',
-              value: query.searchNameTerm,
+              name: query.searchNameTerm,
             });
           }
 
