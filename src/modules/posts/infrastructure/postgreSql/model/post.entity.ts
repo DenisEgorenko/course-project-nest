@@ -9,7 +9,7 @@ import { Blog } from '../../../../blogs/infrastructure/postgreSql/model/blog.ent
 
 @Entity()
 export class Post {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column()
   title: string;

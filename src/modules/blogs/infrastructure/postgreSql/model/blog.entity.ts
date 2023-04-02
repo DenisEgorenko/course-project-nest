@@ -15,7 +15,7 @@ import { Post } from '../../../../posts/infrastructure/postgreSql/model/post.ent
 
 @Entity()
 export class Blog implements BlogBaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column()
   name: string;
