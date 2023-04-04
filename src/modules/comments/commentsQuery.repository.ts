@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../../db/schemas/comments.schema';
+import {
+  Comment,
+  CommentDocument,
+} from './infrastructure/mongo/model/comments.schema';
 import { commentsQueryModel } from './models/commentsQueryModel';
-import { LikesModel } from 'src/common/models/likesModel';
+import { commentsToOutputModel } from './models/commentsToOutputModel';
 
 @Injectable()
 export class CommentsQueryRepository {
@@ -43,91 +46,6 @@ export class CommentsQueryRepository {
       (item) => !bannedUsers.includes(item.userId),
     );
 
-    return commentsToOutputModel(
-      pagesCount,
-      pageNumber,
-      pageSize,
-      totalCount,
-      notBannedItems,
-      userId,
-      bannedUsers,
-    );
+    return commentsToOutputModel(query, items, totalCount, userId);
   }
 }
-
-export const commentsToOutputModel = (
-  pagesCount: number,
-  page: number,
-  pageSize: number,
-  totalCount: number,
-  items: CommentDocument[],
-  userId: string,
-  bannedUsers: string[],
-): commentsOutputModel => {
-  return {
-    pagesCount: pagesCount,
-    page: page,
-    pageSize: pageSize,
-    totalCount: totalCount,
-    items: items.map((comment) =>
-      commentToOutputModel(comment, userId, bannedUsers),
-    ),
-  };
-};
-
-export const commentToOutputModel = (
-  item: CommentDocument,
-  userId: string,
-  bannedUsers: string[],
-): commentOutputModel => {
-  const likes = item.likesInfo.likes.filter(
-    (like) => !bannedUsers.includes(like),
-  );
-
-  const dislikes = item.likesInfo.dislikes.filter(
-    (dislike) => !bannedUsers.includes(dislike),
-  );
-
-  return {
-    id: item.id,
-    content: item.content,
-    commentatorInfo: {
-      userId: item.userId,
-      userLogin: item.userLogin,
-    },
-    createdAt: item.createdAt,
-    likesInfo: {
-      likesCount: likes.length,
-      dislikesCount: dislikes.length,
-      myStatus: item.likesInfo.likes.includes(userId)
-        ? LikesModel.Like
-        : item.likesInfo.dislikes.includes(userId)
-        ? LikesModel.Dislike
-        : LikesModel.None,
-    },
-  };
-};
-
-export type commentsOutputModel = {
-  pagesCount: number;
-  page: number;
-  pageSize: number;
-  totalCount: number;
-  items: commentOutputModel[];
-};
-
-export type commentOutputModel = {
-  id: string;
-  content: string;
-
-  commentatorInfo: {
-    userId: string;
-    userLogin: string;
-  };
-  createdAt: Date;
-  likesInfo: {
-    likesCount: number;
-    dislikesCount: number;
-    myStatus: LikesModel;
-  };
-};

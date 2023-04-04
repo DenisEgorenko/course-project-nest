@@ -12,13 +12,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from '../posts.service';
-import { PostsQueryRepository } from '../postsQuery.repository';
 import { postsQueryModel } from '../models/postsQueryModel';
 import { commentsQueryModel } from '../../comments/models/commentsQueryModel';
-import {
-  CommentsQueryRepository,
-  commentToOutputModel,
-} from '../../comments/commentsQuery.repository';
+import { CommentsQueryRepository } from '../../comments/commentsQuery.repository';
 import { CreateCommentDto } from '../../comments/dto/createComment.dto';
 import { CommentsService } from '../../comments/comments.service';
 import { SetLikeStatusDto } from '../dto/setLikeStatusDto';
@@ -34,9 +30,15 @@ import {
   postsToOutputModel,
   postToOutputModel,
 } from '../models/postsToViewModel';
-import { BlogsService } from '../../blogs/blogs.service';
 import { UsersService } from '../../users/services/users.service';
-import { IPostsQueryRepository } from '../core/abstracts/postsQuery.repository.abstract';
+import { CommandBus } from '@nestjs/cqrs';
+import { SetPostLikeStatusCommand } from '../use-cases/setPostLikeStatus.useCase';
+import { CreateCommentCommand } from '../../comments/use-cases/createComment.useCase';
+import { BlogsService } from '../../blogs/blogs.service';
+import {
+  commentsToOutputModel,
+  commentToOutputModel,
+} from '../../comments/models/commentsToOutputModel';
 
 @Controller('posts')
 export class PostsController {
@@ -44,10 +46,10 @@ export class PostsController {
     protected postsService: PostsService,
     protected commentsService: CommentsService,
     protected usersService: UsersService,
-    protected blogsService: BlogsService,
-
-    protected postsQueryRepository: IPostsQueryRepository,
+    protected commandBus: CommandBus,
     protected commentsQueryRepository: CommentsQueryRepository,
+
+    protected blogsService: BlogsService,
   ) {}
 
   // Post's CRUD
@@ -60,7 +62,12 @@ export class PostsController {
   ) {
     const items = await this.postsService.getAllPosts(query);
 
-    return postsToOutputModel(query, items.items, items.totalCount);
+    return postsToOutputModel(
+      query,
+      items.items,
+      items.totalCount,
+      jwtRTPayload.user.userId,
+    );
   }
 
   @Get(':postId')
@@ -69,20 +76,17 @@ export class PostsController {
     @Param('postId') postId: string,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
-    console.log('here');
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
       throw new NotFoundException();
     }
 
-    console.log(post);
-
     if (post.blog.isBanned) {
       throw new NotFoundException();
     }
 
-    return postToOutputModel(post);
+    return postToOutputModel(post, jwtRTPayload.user.userId);
   }
 
   // Post's comments
@@ -100,13 +104,16 @@ export class PostsController {
       throw new NotFoundException('no such post');
     }
 
-    const bannedUsers = await this.usersService.getAllBannedUsersIds();
-
-    return this.commentsQueryRepository.getAllPostComments(
-      postId,
+    const result = await this.commentsService.getAllCommentsForPost(
       query,
+      postId,
+    );
+
+    return commentsToOutputModel(
+      query,
+      result.items,
+      result.totalCount,
       jwtRTPayload.user.userId,
-      bannedUsers,
     );
   }
 
@@ -123,22 +130,25 @@ export class PostsController {
       throw new NotFoundException('no such post');
     }
 
-    if (
-      await this.usersService.getUserStatusForBlog(
-        jwtATPayload.user.userId,
-        post.blogId,
-      )
-    ) {
-      throw new ForbiddenException();
-    }
-    const newComment = await this.commentsService.createPostComment(
-      createCommentDto,
-      postId,
-      jwtATPayload.user.userId,
-      jwtATPayload.user.login,
+    const blog = await this.blogsService.getBlogById(post.blog.id);
+
+    const ban = blog.blogsBanInfo.filter(
+      (ban) => ban.user.id === jwtATPayload.user.userId,
     );
 
-    return commentToOutputModel(newComment, jwtATPayload.user.userId, []);
+    if (ban.length && ban[0].isBanned) {
+      throw new ForbiddenException();
+    }
+
+    const newComment = await this.commandBus.execute(
+      new CreateCommentCommand(
+        createCommentDto,
+        postId,
+        jwtATPayload.user.userId,
+      ),
+    );
+
+    return commentToOutputModel(newComment, jwtATPayload.user.userId);
   }
 
   // Post's likes
@@ -157,11 +167,12 @@ export class PostsController {
       throw new NotFoundException('no such post');
     }
 
-    return this.postsService.setPostLikeStatus(
-      postId,
-      jwtATPayload.user.userId,
-      jwtATPayload.user.login,
-      setLikeStatusDto,
+    return await this.commandBus.execute(
+      new SetPostLikeStatusCommand(
+        setLikeStatusDto,
+        postId,
+        jwtATPayload.user.userId,
+      ),
     );
   }
 }

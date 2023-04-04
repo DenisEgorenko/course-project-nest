@@ -19,7 +19,7 @@ export class BlogsSqlRepository implements IBlogsRepository {
     return this.blogsRepository.findOne({
       relations: {
         user: true,
-        // blogsBanInfo: true,
+        blogsBanInfo: { user: true },
       },
       where: {
         id,

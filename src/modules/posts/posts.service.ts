@@ -144,7 +144,6 @@ export class PostsService {
   async setPostLikeStatus(
     postId: string,
     userId: string,
-    userLogin: string,
     setLikeStatusDto: SetLikeStatusDto,
   ) {
     // const likeInfo = await this.getUserLikeInfo(userId, postId);

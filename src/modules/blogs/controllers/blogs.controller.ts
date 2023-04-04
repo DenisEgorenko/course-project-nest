@@ -66,6 +66,11 @@ export class BlogsController {
 
     const items = await this.postsService.getAllPosts(query, blogId);
 
-    return postsToOutputModel(query, items.items, items.totalCount);
+    return postsToOutputModel(
+      query,
+      items.items,
+      items.totalCount,
+      jwtRTPayload.user.userId,
+    );
   }
 }

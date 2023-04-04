@@ -11,6 +11,11 @@ import {
 } from 'typeorm';
 import { Security } from '../../../../security/infrastructure/postgreSql/model/security.entity';
 import { Blog } from '../../../../blogs/infrastructure/postgreSql/model/blog.entity';
+import { PostLike } from '../../../../posts/infrastructure/postgreSql/model/post.entity';
+import {
+  Comment,
+  CommentLike,
+} from '../../../../comments/infrastructure/postgreSql/model/comments.entity';
 
 /// Schema
 
@@ -142,6 +147,21 @@ export class User implements UserBaseEntity {
     onDelete: 'CASCADE',
   })
   blogs: Relation<Blog>[];
+
+  @OneToMany(() => PostLike, (postLike) => postLike.user, {
+    onDelete: 'CASCADE',
+  })
+  postLikes: Relation<PostLike>[];
+
+  @OneToMany(() => CommentLike, (commentLike) => commentLike.user, {
+    onDelete: 'CASCADE',
+  })
+  commentsLikes: Relation<CommentLike>[];
+
+  @OneToMany(() => Comment, (comment) => comment.user, {
+    onDelete: 'CASCADE',
+  })
+  comments: Relation<Comment>[];
 
   setRecoveryCode(recoveryCode: string) {
     this.passwordRecovery.recoveryCode = recoveryCode;

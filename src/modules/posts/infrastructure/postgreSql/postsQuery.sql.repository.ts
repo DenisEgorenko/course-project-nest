@@ -1,10 +1,11 @@
 import { IPostsQueryRepository } from '../../core/abstracts/postsQuery.repository.abstract';
-import { blogsQueryModel } from '../../../blogs/models/blogsQueryModel';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './model/post.entity';
 import { postsQueryModel } from '../../models/postsQueryModel';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PostsQuerySqlRepository implements IPostsQueryRepository {
   constructor(
     @InjectRepository(Post)
@@ -19,24 +20,12 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
 
     const skip: number = pageSize * (pageNumber - 1);
 
-    const totalCount = await this.postsRepository
+    const [items, totalCount] = await this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.blog', 'blog')
-      .where((qb) => {
-        if (blogId) {
-          qb.where('blog.id = :blogId', {
-            blogId,
-          });
-        } else {
-          return;
-        }
-      })
-      .andWhere('blog.isBanned = false')
-      .getCount();
-
-    const items = await this.postsRepository
-      .createQueryBuilder('post')
-      .leftJoinAndSelect('post.blog', 'blog')
+      .leftJoinAndSelect('post.postLikes', 'postLikes')
+      .leftJoinAndSelect('postLikes.user', 'user')
+      .leftJoinAndSelect('user.userBanInfo', 'userBanInfo')
       .where((qb) => {
         if (blogId) {
           qb.where('blog.id = :blogId', {
@@ -48,9 +37,11 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
       })
       .andWhere('blog.isBanned = false')
       .orderBy(`blog.${sortBy}`, sortDirection)
+      .addOrderBy(`postLikes.createdAt`, 'DESC')
       .limit(pageSize)
       .offset(skip)
-      .getMany();
+      .getManyAndCount();
+
     return { items, totalCount };
   }
 }

@@ -23,6 +23,8 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
 
     const user = await this.usersRepository.findUserByUserId(userId);
 
+    console.log(user);
+
     const newBlog = new Blog();
     newBlog.createdAt = new Date();
     newBlog.name = createBlogDto.name;

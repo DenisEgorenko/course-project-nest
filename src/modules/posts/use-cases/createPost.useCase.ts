@@ -1,4 +1,3 @@
-import { CreateBlogDto } from '../../blogs/controllers/dto/createBlog.dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { IBlogsRepository } from '../../blogs/core/abstracts/blogs.repository.abstract';
 import { Post } from '../infrastructure/postgreSql/model/post.entity';

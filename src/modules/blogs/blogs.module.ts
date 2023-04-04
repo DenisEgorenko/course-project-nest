@@ -36,6 +36,12 @@ import { PostsSqlRepository } from '../posts/infrastructure/postgreSql/posts.sql
 import { Post } from '../posts/infrastructure/postgreSql/model/post.entity';
 import { IPostsQueryRepository } from '../posts/core/abstracts/postsQuery.repository.abstract';
 import { PostsQuerySqlRepository } from '../posts/infrastructure/postgreSql/postsQuery.sql.repository';
+import { CommentsService } from '../comments/comments.service';
+import { ICommentsRepository } from '../comments/core/abstracts/comments.repository.abstract';
+import { CommentsSqlRepository } from '../comments/infrastructure/postgreSql/comments.sql.repository';
+import { ICommentsQueryRepository } from '../comments/core/abstracts/commentsQuery.repository.abstract';
+import { CommentsQuerySqlRepository } from '../comments/infrastructure/postgreSql/commentsQuery.sql.repository';
+import { Comment } from '../comments/infrastructure/postgreSql/model/comments.entity';
 
 const handlers = [
   UpdateBlogHandler,
@@ -51,7 +57,7 @@ const handlers = [
     DataBaseModule,
     CqrsModule,
     UsersModule,
-    TypeOrmModule.forFeature([Blog, BlogsBanInfo, Post]),
+    TypeOrmModule.forFeature([Blog, BlogsBanInfo, Post, Comment]),
   ],
   controllers: [BlogsController, BlogsBloggerController, BlogsSaController],
   providers: [
@@ -62,6 +68,7 @@ const handlers = [
     BasicStrategy,
     JwtService,
     PasswordService,
+    CommentsService,
     AllBloggerCommentsQueryRepository,
     { provide: IBlogsRepository, useClass: BlogsSqlRepository },
     {
@@ -83,6 +90,14 @@ const handlers = [
     {
       provide: IPostsQueryRepository,
       useClass: PostsQuerySqlRepository,
+    },
+    {
+      provide: ICommentsRepository,
+      useClass: CommentsSqlRepository,
+    },
+    {
+      provide: ICommentsQueryRepository,
+      useClass: CommentsQuerySqlRepository,
     },
     ...handlers,
   ],

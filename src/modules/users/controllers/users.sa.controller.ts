@@ -90,9 +90,6 @@ export class UsersSaController {
     if (!user) {
       throw new NotFoundException();
     }
-
-    console.log(user);
-
     return this.commandBus.execute(new BanUserCommand(userId, banStatusDto));
   }
 }

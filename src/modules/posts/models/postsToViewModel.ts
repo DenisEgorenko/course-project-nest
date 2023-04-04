@@ -6,6 +6,7 @@ export const postsToOutputModel = (
   query: postsQueryModel,
   items: PostDocument[],
   totalCount: number,
+  userId: string,
 ): postsOutputModel => {
   const pageSize: number = query.pageSize ? +query.pageSize : 10;
   const pageNumber: number = query.pageNumber ? +query.pageNumber : 1;
@@ -16,22 +17,24 @@ export const postsToOutputModel = (
     page: pageNumber,
     pageSize: pageSize,
     totalCount: totalCount,
-    items: items.map((item) => postToOutputModel(item)),
+    items: items.map((item) => postToOutputModel(item, userId)),
   };
 };
 
-export const postToOutputModel = (post: any): postOutputModel => {
-  // const likes = post.extendedLikesInfo.likes.filter(
-  //   (like) => !bannedUsers.includes(like),
-  // );
-  //
-  // const dislikes = post.extendedLikesInfo.dislikes.filter(
-  //   (dislike) => !bannedUsers.includes(dislike),
-  // );
-  //
-  // const newestLikes = post.extendedLikesInfo.newestLikes.filter(
-  //   (like) => !bannedUsers.includes(like.userId),
-  // );
+export const postToOutputModel = (
+  post: any,
+  userId: string,
+): postOutputModel => {
+  let filteredPostLikes;
+  if (post.postLikes) {
+    filteredPostLikes = post.postLikes.filter(
+      (like) => like.user.userBanInfo.banStatus === false,
+    );
+  } else {
+    filteredPostLikes = [];
+  }
+
+  const userLike = filteredPostLikes.filter((like) => like.user.id === userId);
 
   return {
     id: post.id,
@@ -41,29 +44,22 @@ export const postToOutputModel = (post: any): postOutputModel => {
     blogId: post.blog.id,
     blogName: post.blog.name,
     createdAt: post.createdAt,
-    // extendedLikesInfo: {
-    //   likesCount: likes.length,
-    //   dislikesCount: dislikes.length,
-    //   myStatus: post.extendedLikesInfo.likes.includes(userId)
-    //     ? LikesModel.Like
-    //     : post.extendedLikesInfo.dislikes.includes(userId)
-    //     ? LikesModel.Dislike
-    //     : LikesModel.None,
-    //   newestLikes: newestLikes
-    //     .sort((a, b) =>
-    //       a.addedAt > b.addedAt ? -1 : b.addedAt > a.addedAt ? 1 : 0,
-    //     )
-    //     .map((likeInfo) => ({
-    //       addedAt: likeInfo.addedAt,
-    //       userId: likeInfo.userId,
-    //       login: likeInfo.login,
-    //     })),
-    // },
     extendedLikesInfo: {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: LikesModel.None,
-      newestLikes: [],
+      likesCount: filteredPostLikes.filter(
+        (like) => like.likeStatus === LikesModel.Like,
+      ).length,
+      dislikesCount: filteredPostLikes.filter(
+        (like) => like.likeStatus === LikesModel.Dislike,
+      ).length,
+      myStatus: userLike.length ? userLike[0].likeStatus : LikesModel.None,
+      newestLikes: filteredPostLikes
+        .filter((like) => like.likeStatus === LikesModel.Like)
+        .slice(0, 3)
+        .map((likeInfo) => ({
+          addedAt: likeInfo.createdAt,
+          userId: likeInfo.user.id,
+          login: likeInfo.user.login,
+        })),
     },
   };
 };

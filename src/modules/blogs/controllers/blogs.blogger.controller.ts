@@ -40,6 +40,8 @@ import { BlogsCommentsQueryModel } from '../models/blogsCommentsQueryModel';
 import { AllBloggerCommentsQueryRepository } from '../../comments/allBloggerCommentsQuery.repository';
 import { UsersService } from '../../users/services/users.service';
 import { CreatePostCommand } from '../../posts/use-cases/createPost.useCase';
+import { commentsToOutputModel } from '../../comments/models/commentsToOutputModel';
+import { CommentsService } from '../../comments/comments.service';
 
 @Controller('blogger/blogs')
 export class BlogsBloggerController {
@@ -48,6 +50,7 @@ export class BlogsBloggerController {
     private blogsService: BlogsService,
     private postsService: PostsService,
     private usersService: UsersService,
+    protected commentsService: CommentsService,
   ) {}
 
   // Create Blog
@@ -61,7 +64,6 @@ export class BlogsBloggerController {
       new CreateBlogCommand(createBlogDto, jwtATPayload.user.userId),
     );
 
-    console.log(newBlog);
     return blogToOutputModel(newBlog);
   }
 
@@ -148,7 +150,8 @@ export class BlogsBloggerController {
       new CreatePostCommand(createPostDto, blogId),
     );
 
-    return postToOutputModel(newPost);
+    console.log(newPost);
+    return postToOutputModel(newPost, jwtATPayload.user.userId);
   }
 
   //  Update post
@@ -220,23 +223,16 @@ export class BlogsBloggerController {
     @Query() blogsCommentsQueryModel: BlogsCommentsQueryModel,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
-    // const allUsersPosts = await this.postsService.getAllBloggerPosts(
-    //   jwtATPayload.user.userId,
-    // );
-    // const bannedUsers = await this.usersService.getAllBannedUsersIds();
-    // const allComments =
-    //   await this.allBloggerCommentsQueryRepository.getAllBloggerPostComments(
-    //     blogsCommentsQueryModel,
-    //     jwtATPayload.user.userId,
-    //     allUsersPosts,
-    //   );
-    //
-    // return this.allBloggerCommentsQueryRepository.allBloggerPostsCommentsToOutputModel(
-    //   blogsCommentsQueryModel,
-    //   allComments.items,
-    //   allComments.totalCount,
-    //   jwtATPayload.user.userId,
-    //   bannedUsers,
-    // );
+    const result = await this.commentsService.getAllCommentsForAllUsersPosts(
+      blogsCommentsQueryModel,
+      jwtATPayload.user.userId,
+    );
+
+    return commentsToOutputModel(
+      blogsCommentsQueryModel,
+      result.items,
+      result.totalCount,
+      jwtATPayload.user.userId,
+    );
   }
 }

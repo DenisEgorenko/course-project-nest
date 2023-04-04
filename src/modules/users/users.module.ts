@@ -43,6 +43,7 @@ import { IBlogsBannedUsersRepository } from '../blogs/core/abstracts/blogsBanned
 import { BlogsBannedUsersQuerySqlRepository } from '../blogs/infrastructure/postgreSql/blogsBannedUsersQuery.sql.repository';
 import { IBlogsQueryRepository } from '../blogs/core/abstracts/blogsQuery.repository.abstract';
 import { BlogsQuerySqlRepository } from '../blogs/infrastructure/postgreSql/blogsQuery.sql.repository';
+import { PostLike } from '../posts/infrastructure/postgreSql/model/post.entity';
 
 const handlers = [
   BanUserHandler,
@@ -64,6 +65,7 @@ const handlers = [
       UserBanInfo,
       Security,
       Blog,
+      PostLike,
     ]),
     SecurityModule,
     CqrsModule,

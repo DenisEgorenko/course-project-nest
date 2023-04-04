@@ -14,20 +14,31 @@ import { PasswordService } from '../../application/password.service';
 import { UsersModule } from '../users/users.module';
 import { BlogsModule } from '../blogs/blogs.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Post } from './infrastructure/postgreSql/model/post.entity';
+import { Post, PostLike } from './infrastructure/postgreSql/model/post.entity';
 import { IPostsRepository } from './core/abstracts/posts.repository.abstract';
 import { PostsSqlRepository } from './infrastructure/postgreSql/posts.sql.repository';
 import { CreatePostHandler } from './use-cases/createPost.useCase';
 import { IPostsQueryRepository } from './core/abstracts/postsQuery.repository.abstract';
 import { PostsQuerySqlRepository } from './infrastructure/postgreSql/postsQuery.sql.repository';
+import { User } from '../users/infrastructure/postgreSql/model/user.entity';
+import { IPostsLikesRepository } from './core/abstracts/postsLikes.repository.abstract';
+import { PostsLikesSqlRepository } from './infrastructure/postgreSql/postsLikes.sql.repository';
+import { SetPostLikeStatusHandler } from './use-cases/setPostLikeStatus.useCase';
+import { CommandBus, CqrsModule } from '@nestjs/cqrs';
+import { ICommentsRepository } from '../comments/core/abstracts/comments.repository.abstract';
+import { CommentsSqlRepository } from '../comments/infrastructure/postgreSql/comments.sql.repository';
+import { Comment } from '../comments/infrastructure/postgreSql/model/comments.entity';
+import { ICommentsQueryRepository } from '../comments/core/abstracts/commentsQuery.repository.abstract';
+import { CommentsQuerySqlRepository } from '../comments/infrastructure/postgreSql/commentsQuery.sql.repository';
 
-const providers = [CreatePostHandler];
+const handlers = [CreatePostHandler, SetPostLikeStatusHandler];
 @Module({
   imports: [
     DataBaseModule,
     UsersModule,
     BlogsModule,
-    TypeOrmModule.forFeature([Post]),
+    TypeOrmModule.forFeature([Post, PostLike, User, Comment]),
+    CqrsModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -50,7 +61,14 @@ const providers = [CreatePostHandler];
       provide: IPostsQueryRepository,
       useClass: PostsQuerySqlRepository,
     },
-    ...providers,
+    {
+      provide: IPostsLikesRepository,
+      useClass: PostsLikesSqlRepository,
+    },
+    { provide: ICommentsRepository, useClass: CommentsSqlRepository },
+    { provide: ICommentsQueryRepository, useClass: CommentsQuerySqlRepository },
+    ...handlers,
   ],
+  exports: [...handlers],
 })
 export class PostsModule {}

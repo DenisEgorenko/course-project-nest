@@ -8,7 +8,10 @@ import {
   Post,
   PostSchema,
 } from '../modules/posts/infrastructure/mongo/model/post.schema';
-import { Comment, CommentSchema } from './schemas/comments.schema';
+import {
+  Comment,
+  CommentSchema,
+} from '../modules/comments/infrastructure/mongo/model/comments.schema';
 import { ConfigService } from '@nestjs/config';
 import {
   Security,

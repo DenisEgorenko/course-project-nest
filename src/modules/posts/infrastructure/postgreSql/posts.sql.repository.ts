@@ -19,9 +19,14 @@ export class PostsSqlRepository implements IPostsRepository {
     return this.postsRepository.findOne({
       relations: {
         blog: { user: true },
+        postLikes: { user: { userBanInfo: true } },
       },
       where: {
         id: postId,
+        // postLikes: { user: { userBanInfo: { banStatus: false } } },
+      },
+      order: {
+        postLikes: { createdAt: 'DESC' },
       },
     });
   }

@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from '../../db/schemas/comments.schema';
+import {
+  Comment,
+  CommentDocument,
+} from './infrastructure/mongo/model/comments.schema';
 import { commentsQueryModel } from './models/commentsQueryModel';
 import { LikesModel } from 'src/common/models/likesModel';
 import { BlogsCommentsQueryModel } from '../blogs/models/blogsCommentsQueryModel';
