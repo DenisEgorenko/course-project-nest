@@ -5,6 +5,7 @@ import { HttpExceptionFilter } from './exceptionFilter/exception.filter';
 // import cookieParser from 'cookie-parser';
 import * as cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,9 +26,12 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 
+  const config = app.get<ConfigService>(ConfigService);
+  const port = config.get('app.port');
+
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
-  await app.listen(3000);
+  await app.listen(port);
 }
 
 bootstrap();

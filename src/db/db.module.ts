@@ -33,7 +33,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get<string>('database.postgre.host'),
-        port: configService.get<number>('database.postgre.port'),
+        port: configService.get<number>('database.postgre.db_port'),
         username: configService.get<string>('database.postgre.user'),
         password: configService.get<string>('database.postgre.password'),
         database: configService.get<string>('database.postgre.database'),

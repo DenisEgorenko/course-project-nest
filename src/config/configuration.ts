@@ -23,7 +23,7 @@ export default () => ({
       user: process.env.PGUSER || 'postgres',
       password: process.env.PGPASSWORD || '1234',
       ssl: process.env.SSL_TYPE || false,
-      port: process.env.PORT || 5433,
+      db_port: process.env.POSTGRE_PORT || 5433,
     },
   },
   basicAuthConstants: {
@@ -32,5 +32,8 @@ export default () => ({
   },
   test: {
     mode: process.env.TEST_MODE || false,
+  },
+  app: {
+    port: process.env.PORT || 3000,
   },
 });
