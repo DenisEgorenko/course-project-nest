@@ -124,6 +124,7 @@ export class PostsController {
     @Body() createCommentDto: CreateCommentDto,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
+    console.log(createCommentDto);
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
