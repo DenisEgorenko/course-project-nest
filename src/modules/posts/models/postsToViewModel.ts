@@ -1,10 +1,9 @@
-import { PostDocument } from '../infrastructure/mongo/model/post.schema';
 import { LikesModel } from '../../../common/models/likesModel';
 import { postsQueryModel } from './postsQueryModel';
 
 export const postsToOutputModel = (
   query: postsQueryModel,
-  items: PostDocument[],
+  items: any[],
   totalCount: number,
   userId: string,
 ): postsOutputModel => {

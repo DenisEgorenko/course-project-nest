@@ -62,6 +62,8 @@ export class PostsController {
   ) {
     const items = await this.postsService.getAllPosts(query);
 
+    console.log('all posts', items);
+
     return postsToOutputModel(
       query,
       items.items,
@@ -110,6 +112,8 @@ export class PostsController {
       query,
       postId,
     );
+
+    console.log('all comments', result);
 
     return commentsToOutputModel(
       query,

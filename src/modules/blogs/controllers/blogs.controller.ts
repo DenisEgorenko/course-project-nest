@@ -66,6 +66,8 @@ export class BlogsController {
 
     const items = await this.postsService.getAllPosts(query, blogId);
 
+    console.log('all posts', items);
+
     return postsToOutputModel(
       query,
       items.items,
