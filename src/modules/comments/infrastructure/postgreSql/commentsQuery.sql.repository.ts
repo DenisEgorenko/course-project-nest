@@ -66,7 +66,7 @@ export class CommentsQuerySqlRepository implements ICommentsQueryRepository {
       .where('userBlog.id = :userId', {
         userId,
       })
-      // .andWhere('userBanInfo.banStatus = false')
+      .andWhere('userBanInfo.banStatus = false')
       .orderBy(`comment.${sortBy}`, sortDirection)
       .addOrderBy(`commentsLikes.createdAt`, 'DESC')
       .limit(pageSize)
