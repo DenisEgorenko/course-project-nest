@@ -11,6 +11,7 @@ export const postsToOutputModel = (
   const pageNumber: number = query.pageNumber ? +query.pageNumber : 1;
   const pagesCount = Math.ceil(totalCount / pageSize);
 
+  console.log('All items in function', items);
   return {
     pagesCount: pagesCount,
     page: pageNumber,
@@ -24,6 +25,8 @@ export const postToOutputModel = (
   post: any,
   userId: string,
 ): postOutputModel => {
+  console.log('One post in second function', post);
+
   let filteredPostLikes;
   if (post.postLikes) {
     filteredPostLikes = post.postLikes.filter(

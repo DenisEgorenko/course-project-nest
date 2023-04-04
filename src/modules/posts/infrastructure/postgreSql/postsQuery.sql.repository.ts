@@ -60,7 +60,7 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
       .andWhere('blog.isBanned = false')
       .getCount();
 
-    console.log(items, totalCount);
+    console.log('items from query', items, totalCount);
 
     return { items, totalCount };
   }
