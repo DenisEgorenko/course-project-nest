@@ -45,10 +45,7 @@ export class PostsController {
   constructor(
     protected postsService: PostsService,
     protected commentsService: CommentsService,
-    protected usersService: UsersService,
     protected commandBus: CommandBus,
-    protected commentsQueryRepository: CommentsQueryRepository,
-
     protected blogsService: BlogsService,
   ) {}
 
@@ -61,8 +58,6 @@ export class PostsController {
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
     const items = await this.postsService.getAllPosts(query);
-
-    console.log('all posts', items);
 
     return postsToOutputModel(
       query,
@@ -100,8 +95,6 @@ export class PostsController {
     @Query() query: commentsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
-    console.log('in case if mistake is in get request');
-
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
@@ -112,8 +105,6 @@ export class PostsController {
       query,
       postId,
     );
-
-    console.log('all comments', result);
 
     return commentsToOutputModel(
       query,
@@ -130,12 +121,6 @@ export class PostsController {
     @Body() createCommentDto: CreateCommentDto,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
-    console.log('Mistake is here');
-
-    console.log(createCommentDto);
-
-    console.log('But there also should be DTO');
-
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
