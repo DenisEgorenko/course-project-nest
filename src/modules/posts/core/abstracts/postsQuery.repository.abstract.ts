@@ -1,6 +1,5 @@
-import { blogsQueryModel } from '../../../blogs/models/blogsQueryModel';
-import { postsQueryModel } from '../../models/postsQueryModel';
+import { PostsQueryModel } from '../../models/postsQueryModel';
 
 export abstract class IPostsQueryRepository {
-  abstract getAllPosts(query: postsQueryModel, blogId?: string);
+  abstract getAllPosts(query: PostsQueryModel, blogId?: string);
 }

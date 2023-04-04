@@ -12,9 +12,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from '../posts.service';
-import { postsQueryModel } from '../models/postsQueryModel';
-import { commentsQueryModel } from '../../comments/models/commentsQueryModel';
-import { CommentsQueryRepository } from '../../comments/commentsQuery.repository';
+import { PostsQueryModel } from '../models/postsQueryModel';
+import { CommentsQueryModel } from '../../comments/models/commentsQueryModel';
 import { CreateCommentDto } from '../../comments/dto/createComment.dto';
 import { CommentsService } from '../../comments/comments.service';
 import { SetLikeStatusDto } from '../dto/setLikeStatusDto';
@@ -30,7 +29,6 @@ import {
   postsToOutputModel,
   postToOutputModel,
 } from '../models/postsToViewModel';
-import { UsersService } from '../../users/services/users.service';
 import { CommandBus } from '@nestjs/cqrs';
 import { SetPostLikeStatusCommand } from '../use-cases/setPostLikeStatus.useCase';
 import { CreateCommentCommand } from '../../comments/use-cases/createComment.useCase';
@@ -54,13 +52,13 @@ export class PostsController {
   @Get()
   @UseGuards(AuthGuardForLikes)
   async getAllPosts(
-    @Query() query: postsQueryModel,
+    @Query() postsQueryModel: PostsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
-    const items = await this.postsService.getAllPosts(query);
+    const items = await this.postsService.getAllPosts(postsQueryModel);
 
     return postsToOutputModel(
-      query,
+      postsQueryModel,
       items.items,
       items.totalCount,
       jwtRTPayload.user.userId,
@@ -92,7 +90,7 @@ export class PostsController {
   @UseGuards(AuthGuardForLikes)
   async getPostComments(
     @Param('postId') postId: string,
-    @Query() query: commentsQueryModel,
+    @Query() commentsQueryModel: CommentsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
     const post = await this.postsService.getPostById(postId);
@@ -102,12 +100,12 @@ export class PostsController {
     }
 
     const result = await this.commentsService.getAllCommentsForPost(
-      query,
+      commentsQueryModel,
       postId,
     );
 
     return commentsToOutputModel(
-      query,
+      commentsQueryModel,
       result.items,
       result.totalCount,
       jwtRTPayload.user.userId,

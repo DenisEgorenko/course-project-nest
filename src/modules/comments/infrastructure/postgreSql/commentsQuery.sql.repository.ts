@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { ICommentsQueryRepository } from '../../core/abstracts/commentsQuery.repository.abstract';
-import { commentsQueryModel } from '../../models/commentsQueryModel';
+import { CommentsQueryModel } from '../../models/commentsQueryModel';
 import { Comment } from './model/comments.entity';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class CommentsQuerySqlRepository implements ICommentsQueryRepository {
     @InjectRepository(Comment)
     protected commentsRepository: Repository<Comment>,
   ) {}
-  async getAllCommentsForPost(query: commentsQueryModel, postId: string) {
+  async getAllCommentsForPost(query: CommentsQueryModel, postId: string) {
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';
     const sortDirection = query.sortDirection === 'asc' ? 'ASC' : 'DESC';
 
@@ -42,7 +42,7 @@ export class CommentsQuerySqlRepository implements ICommentsQueryRepository {
   }
 
   async getAllCommentsForAllUsersPosts(
-    query: commentsQueryModel,
+    query: CommentsQueryModel,
     userId: string,
   ) {
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';

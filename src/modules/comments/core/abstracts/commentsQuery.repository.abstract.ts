@@ -1,10 +1,10 @@
-import { commentsQueryModel } from '../../models/commentsQueryModel';
+import { CommentsQueryModel } from '../../models/commentsQueryModel';
 
 export abstract class ICommentsQueryRepository {
-  abstract getAllCommentsForPost(query: commentsQueryModel, postId: string);
+  abstract getAllCommentsForPost(query: CommentsQueryModel, postId: string);
 
   abstract getAllCommentsForAllUsersPosts(
-    query: commentsQueryModel,
+    query: CommentsQueryModel,
     userId: string,
   );
 }

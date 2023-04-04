@@ -7,10 +7,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from '../blogs.service';
-import { BlogsQueryRepository } from '../blogsQuery.repository';
 import { blogsQueryModel } from '../models/blogsQueryModel';
 import { PostsQueryRepository } from '../../posts/postsQuery.repository';
-import { postsQueryModel } from '../../posts/models/postsQueryModel';
+import { PostsQueryModel } from '../../posts/models/postsQueryModel';
 import { AuthGuardForLikes } from '../../auth/guards/auth-guard-for-likes.guard';
 import { GetCurrentRTJwtContext } from '../../../shared/decorators/get-Rt-current-user.decorator';
 import { JwtRTPayload } from '../../auth/interfaces/jwtPayload.type';
@@ -19,7 +18,6 @@ import {
   blogToOutputModel,
 } from '../models/blogsToViewModel';
 import { postsToOutputModel } from '../../posts/models/postsToViewModel';
-import { UsersService } from '../../users/services/users.service';
 import { PostsService } from '../../posts/posts.service';
 
 @Controller('blogs')
@@ -55,7 +53,7 @@ export class BlogsController {
   @UseGuards(AuthGuardForLikes)
   async getBlogPosts(
     @Param('blogId') blogId: string,
-    @Query() query: postsQueryModel,
+    @Query() query: PostsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
     const blog = await this.blogsService.getBlogById(blogId);

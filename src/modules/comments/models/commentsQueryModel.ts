@@ -1,6 +1,6 @@
 import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class commentsQueryModel {
+export class CommentsQueryModel {
   @IsOptional()
   @IsNumber()
   pageNumber: number;

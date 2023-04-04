@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PostDocument } from './infrastructure/mongo/model/post.schema';
 import { DeleteResult } from 'mongodb';
 import { SetLikeStatusDto } from './dto/setLikeStatusDto';
 import { IPostsRepository } from './core/abstracts/posts.repository.abstract';
 import { IPostsQueryRepository } from './core/abstracts/postsQuery.repository.abstract';
-import { postsQueryModel } from './models/postsQueryModel';
+import { PostsQueryModel } from './models/postsQueryModel';
 
 @Injectable()
 export class PostsService {
@@ -17,7 +16,7 @@ export class PostsService {
     return this.postsRepository.getPostById(id);
   }
 
-  async getAllPosts(query: postsQueryModel, blogId?: string) {
+  async getAllPosts(query: PostsQueryModel, blogId?: string) {
     return this.postsQueryRepository.getAllPosts(query, blogId);
   }
 

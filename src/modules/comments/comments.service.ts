@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ICommentsRepository } from './core/abstracts/comments.repository.abstract';
-import { commentsQueryModel } from './models/commentsQueryModel';
+import { CommentsQueryModel } from './models/commentsQueryModel';
 import { ICommentsQueryRepository } from './core/abstracts/commentsQuery.repository.abstract';
 
 @Injectable()
@@ -19,14 +19,14 @@ export class CommentsService {
   }
 
   async getAllCommentsForPost(
-    query: commentsQueryModel,
+    query: CommentsQueryModel,
     postId: string,
   ): Promise<any> {
     return this.commentsQueryRepository.getAllCommentsForPost(query, postId);
   }
 
   async getAllCommentsForAllUsersPosts(
-    query: commentsQueryModel,
+    query: CommentsQueryModel,
     userId: string,
   ): Promise<any> {
     return this.commentsQueryRepository.getAllCommentsForAllUsersPosts(

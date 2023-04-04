@@ -6,10 +6,9 @@ import {
   Comment,
   CommentDocument,
 } from './infrastructure/mongo/model/comments.schema';
-import { commentsQueryModel } from './models/commentsQueryModel';
+import { CommentsQueryModel } from './models/commentsQueryModel';
 import { LikesModel } from 'src/common/models/likesModel';
 import { BlogsCommentsQueryModel } from '../blogs/models/blogsCommentsQueryModel';
-import { query } from 'express';
 import { PostsService } from '../posts/posts.service';
 
 @Injectable()
@@ -21,7 +20,7 @@ export class AllBloggerCommentsQueryRepository {
     protected postService: PostsService,
   ) {}
   async getAllBloggerPostComments(
-    query: commentsQueryModel,
+    query: CommentsQueryModel,
     userId: string,
     posts: string[],
   ) {

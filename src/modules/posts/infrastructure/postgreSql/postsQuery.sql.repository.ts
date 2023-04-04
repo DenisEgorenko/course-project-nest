@@ -1,7 +1,7 @@
 import { IPostsQueryRepository } from '../../core/abstracts/postsQuery.repository.abstract';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './model/post.entity';
-import { postsQueryModel } from '../../models/postsQueryModel';
+import { PostsQueryModel } from '../../models/postsQueryModel';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
@@ -11,7 +11,7 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
     @InjectRepository(Post)
     protected postsRepository: Repository<Post>,
   ) {}
-  async getAllPosts(query: postsQueryModel, blogId?: string) {
+  async getAllPosts(query: PostsQueryModel, blogId?: string) {
     const sortBy = query.sortBy ? query.sortBy : 'createdAt';
     const sortDirection = query.sortDirection === 'asc' ? 'ASC' : 'DESC';
 

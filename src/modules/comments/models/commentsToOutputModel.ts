@@ -1,9 +1,8 @@
 import { LikesModel } from '../../../common/models/likesModel';
-import { commentsQueryModel } from './commentsQueryModel';
-import { Comment } from '../infrastructure/postgreSql/model/comments.entity';
+import { CommentsQueryModel } from './commentsQueryModel';
 
 export const commentsToOutputModel = (
-  query: commentsQueryModel,
+  query: CommentsQueryModel,
   items: any[],
   totalCount: number,
   userId: string,

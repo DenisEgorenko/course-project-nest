@@ -6,7 +6,7 @@ import {
   Comment,
   CommentDocument,
 } from './infrastructure/mongo/model/comments.schema';
-import { commentsQueryModel } from './models/commentsQueryModel';
+import { CommentsQueryModel } from './models/commentsQueryModel';
 import { commentsToOutputModel } from './models/commentsToOutputModel';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class CommentsQueryRepository {
   ) {}
   async getAllPostComments(
     postId: string,
-    query: commentsQueryModel,
+    query: CommentsQueryModel,
     userId: string,
     bannedUsers: string[],
   ) {

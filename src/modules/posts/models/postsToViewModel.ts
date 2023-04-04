@@ -1,8 +1,8 @@
 import { LikesModel } from '../../../common/models/likesModel';
-import { postsQueryModel } from './postsQueryModel';
+import { PostsQueryModel } from './postsQueryModel';
 
 export const postsToOutputModel = (
-  query: postsQueryModel,
+  query: PostsQueryModel,
   items: any[],
   totalCount: number,
   userId: string,
@@ -11,7 +11,6 @@ export const postsToOutputModel = (
   const pageNumber: number = query.pageNumber ? +query.pageNumber : 1;
   const pagesCount = Math.ceil(totalCount / pageSize);
 
-  console.log('All items in function', items);
   return {
     pagesCount: pagesCount,
     page: pageNumber,

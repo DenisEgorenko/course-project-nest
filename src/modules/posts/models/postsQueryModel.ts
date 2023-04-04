@@ -1,4 +1,4 @@
-export type postsQueryModel = {
+export type PostsQueryModel = {
   pageNumber: number;
   pageSize: number;
   sortBy: string;

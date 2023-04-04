@@ -7,7 +7,7 @@ import {
   PostDocument,
   PostStatics,
 } from './infrastructure/mongo/model/post.schema';
-import { postsQueryModel } from './models/postsQueryModel';
+import { PostsQueryModel } from './models/postsQueryModel';
 import {
   Blog,
   BlogDocument,
@@ -23,7 +23,7 @@ export class PostsQueryRepository {
     protected blogModel: Model<BlogDocument>,
   ) {}
   async getAllPosts(
-    query: postsQueryModel,
+    query: PostsQueryModel,
     userId: string,
     bannedUsers: string[],
     blogId?: string,
