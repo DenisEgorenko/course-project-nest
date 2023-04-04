@@ -35,7 +35,7 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
           return;
         }
       })
-      .andWhere('blog.isBanned = false')
+      // .andWhere('blog.isBanned = false')
       .orderBy(`blog.${sortBy}`, sortDirection)
       .addOrderBy(`postLikes.createdAt`, 'DESC')
       .limit(pageSize)
