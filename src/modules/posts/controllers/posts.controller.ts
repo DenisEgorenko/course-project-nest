@@ -98,6 +98,8 @@ export class PostsController {
     @Query() query: commentsQueryModel,
     @GetCurrentRTJwtContext() jwtRTPayload: JwtRTPayload,
   ) {
+    console.log('in case if mistake is in get request');
+
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
@@ -124,7 +126,12 @@ export class PostsController {
     @Body() createCommentDto: CreateCommentDto,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
+    console.log('Mistake is here');
+
     console.log(createCommentDto);
+
+    console.log('But there also should be DTO');
+
     const post = await this.postsService.getPostById(postId);
 
     if (!post) {
