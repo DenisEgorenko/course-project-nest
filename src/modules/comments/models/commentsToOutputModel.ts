@@ -26,9 +26,9 @@ export const commentToOutputModel = (
 ): commentOutputModel => {
   let filteredCommentsLikes;
   if (item.commentsLikes) {
-    filteredCommentsLikes = item.commentsLikes.filter(
-      (like) => like.user.userBanInfo.banStatus === false,
-    );
+    filteredCommentsLikes = item.commentsLikes
+      .filter((like) => like.user.userBanInfo.banStatus === false)
+      .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
   } else {
     filteredCommentsLikes = [];
   }

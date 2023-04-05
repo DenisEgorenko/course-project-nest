@@ -26,9 +26,9 @@ export const postToOutputModel = (
 ): postOutputModel => {
   let filteredPostLikes;
   if (post.postLikes) {
-    filteredPostLikes = post.postLikes.filter(
-      (like) => like.user.userBanInfo.banStatus === false,
-    );
+    filteredPostLikes = post.postLikes
+      .filter((like) => like.user.userBanInfo.banStatus === false)
+      .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
   } else {
     filteredPostLikes = [];
   }

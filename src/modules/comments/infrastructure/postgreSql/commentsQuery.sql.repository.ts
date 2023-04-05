@@ -36,9 +36,8 @@ export class CommentsQuerySqlRepository implements ICommentsQueryRepository {
         postId,
       })
       .orderBy(`comment.${sortBy}`, sortDirection)
-      .addOrderBy(`commentsLikes.createdAt`, 'DESC')
-      .limit(pageSize)
-      .offset(skip)
+      .skip(skip)
+      .take(pageSize)
       .getManyAndCount();
 
     return { items, totalCount };
@@ -74,9 +73,8 @@ export class CommentsQuerySqlRepository implements ICommentsQueryRepository {
         userId,
       })
       .orderBy(`comment.${sortBy}`, sortDirection)
-      .addOrderBy(`commentsLikes.createdAt`, 'DESC')
-      .limit(pageSize)
-      .offset(skip)
+      .skip(skip)
+      .take(pageSize)
       .getManyAndCount();
 
     return { items, totalCount };

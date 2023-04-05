@@ -20,7 +20,7 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
 
     const skip: number = pageSize * (pageNumber - 1);
 
-    const sqlQuery = await this.postsRepository
+    const [items, totalCount] = await this.postsRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.blog', 'blog', 'blog.isBanned = false')
       .leftJoinAndSelect('post.postLikes', 'postLikes')
@@ -35,16 +35,10 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
           return;
         }
       })
-      .orderBy(`blog.${sortBy}`, sortDirection)
-      .addOrderBy(`postLikes.createdAt`, 'DESC')
-      .limit(pageSize)
-      .offset(skip);
-
-    console.log(blogId, sqlQuery.getSql());
-
-    const [items, totalCount] = await sqlQuery.getManyAndCount();
-
-    console.log('Posts items from query', items, totalCount);
+      .orderBy(`post.${sortBy}`, sortDirection)
+      .skip(skip)
+      .take(pageSize)
+      .getManyAndCount();
 
     return { items, totalCount };
   }
