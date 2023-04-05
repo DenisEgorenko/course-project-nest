@@ -6,9 +6,13 @@ export const GetCurrentRTJwtContext = createParamDecorator(
     const request = context.switchToHttp().getRequest();
     const ctx = request.user as JwtRTPayload;
 
+    console.log('context decorator logger', ctx);
+
     if (!ctx) {
       throw new Error('RT JWTGuard must be used');
     }
+
+    console.log('after error context decorator logger', ctx);
 
     if (!data) {
       return ctx;
