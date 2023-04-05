@@ -42,6 +42,7 @@ import { UsersService } from '../../users/services/users.service';
 import { CreatePostCommand } from '../../posts/use-cases/createPost.useCase';
 import { commentsToOutputModel } from '../../comments/models/commentsToOutputModel';
 import { CommentsService } from '../../comments/comments.service';
+import { CommentsQueryModel } from '../../comments/models/commentsQueryModel';
 
 @Controller('blogger/blogs')
 export class BlogsBloggerController {
@@ -220,7 +221,7 @@ export class BlogsBloggerController {
   @Get('comments')
   @UseGuards(JwtAuthGuard)
   async getAllCommentsForBlogs(
-    @Query() blogsCommentsQueryModel: BlogsCommentsQueryModel,
+    @Query() blogsCommentsQueryModel: CommentsQueryModel,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
     const result = await this.commentsService.getAllCommentsForAllUsersPosts(

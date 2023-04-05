@@ -12,8 +12,6 @@ export const GetCurrentRTJwtContext = createParamDecorator(
       throw new Error('RT JWTGuard must be used');
     }
 
-    console.log('after error context decorator logger', request);
-
     if (!data) {
       return ctx;
     }
