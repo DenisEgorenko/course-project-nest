@@ -104,12 +104,15 @@ export class PostsController {
       postId,
     );
 
-    return commentsToOutputModel(
+    const model = commentsToOutputModel(
       commentsQueryModel,
       result.items,
       result.totalCount,
       jwtRTPayload.user.userId,
     );
+
+    console.log(model);
+    return model;
   }
 
   @Post(':postId/comments')
