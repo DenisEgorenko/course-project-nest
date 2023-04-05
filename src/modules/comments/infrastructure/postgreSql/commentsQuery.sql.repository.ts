@@ -27,11 +27,14 @@ export class CommentsQuerySqlRepository implements ICommentsQueryRepository {
       .leftJoinAndSelect('comment.commentsLikes', 'commentsLikes')
       .leftJoinAndSelect('commentsLikes.user', 'userLike')
       .leftJoinAndSelect('userLike.userBanInfo', 'userLikeBanInfo')
-      .leftJoinAndSelect('user.userBanInfo', 'userBanInfo')
+      .leftJoinAndSelect(
+        'user.userBanInfo',
+        'userBanInfo',
+        'userBanInfo.banStatus = false',
+      )
       .where('post.id = :postId', {
         postId,
       })
-      .andWhere('userBanInfo.banStatus = false')
       .orderBy(`comment.${sortBy}`, sortDirection)
       .addOrderBy(`commentsLikes.createdAt`, 'DESC')
       .limit(pageSize)
@@ -62,11 +65,14 @@ export class CommentsQuerySqlRepository implements ICommentsQueryRepository {
       .leftJoinAndSelect('comment.commentsLikes', 'commentsLikes')
       .leftJoinAndSelect('commentsLikes.user', 'userLike')
       .leftJoinAndSelect('userLike.userBanInfo', 'userLikeBanInfo')
-      .leftJoinAndSelect('user.userBanInfo', 'userBanInfo')
+      .leftJoinAndSelect(
+        'user.userBanInfo',
+        'userBanInfo',
+        'userBanInfo.banStatus = false',
+      )
       .where('userBlog.id = :userId', {
         userId,
       })
-      .andWhere('userBanInfo.banStatus = false')
       .orderBy(`comment.${sortBy}`, sortDirection)
       .addOrderBy(`commentsLikes.createdAt`, 'DESC')
       .limit(pageSize)

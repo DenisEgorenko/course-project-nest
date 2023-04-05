@@ -22,7 +22,7 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
 
     const sqlQuery = await this.postsRepository
       .createQueryBuilder('post')
-      .leftJoinAndSelect('post.blog', 'blog')
+      .leftJoinAndSelect('post.blog', 'blog', 'blog.isBanned = false')
       .leftJoinAndSelect('post.postLikes', 'postLikes')
       .leftJoinAndSelect('postLikes.user', 'user')
       .leftJoinAndSelect('user.userBanInfo', 'userBanInfo')
@@ -35,17 +35,16 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
           return;
         }
       })
-      .andWhere('blog.isBanned = false')
       .orderBy(`blog.${sortBy}`, sortDirection)
-      // .addOrderBy(`postLikes.createdAt`, 'DESC')
+      .addOrderBy(`postLikes.createdAt`, 'DESC')
       .limit(pageSize)
       .offset(skip);
 
-    console.log(blogId, sqlQuery.getQuery());
+    console.log(blogId, sqlQuery.getSql());
 
     const [items, totalCount] = await sqlQuery.getManyAndCount();
 
-    // console.log('Posts items from query', items, totalCount);
+    console.log('Posts items from query', items, totalCount);
 
     return { items, totalCount };
   }
