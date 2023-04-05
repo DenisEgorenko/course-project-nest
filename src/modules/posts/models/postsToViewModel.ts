@@ -24,8 +24,6 @@ export const postToOutputModel = (
   post: any,
   userId: string,
 ): postOutputModel => {
-  console.log('One post in second function', post);
-
   let filteredPostLikes;
   if (post.postLikes) {
     filteredPostLikes = post.postLikes.filter(
