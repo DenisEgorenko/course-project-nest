@@ -37,7 +37,7 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
       })
       .orderBy(`post.${sortBy}`, sortDirection)
       .skip(skip)
-      .limit(pageSize)
+      .take(pageSize)
       .getManyAndCount();
 
     return { items, totalCount };
