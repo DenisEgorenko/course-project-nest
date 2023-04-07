@@ -1,7 +1,6 @@
-import { blogsQueryModel } from '../../models/blogsQueryModel';
+import { BlogsQueryModel } from '../../models/blogsQueryModel';
 import { IBlogsQueryRepository } from '../../core/abstracts/blogsQuery.repository.abstract';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlogsBanInfo } from '../../../users/infrastructure/postgreSql/model/user.entity';
 import { Brackets, Repository } from 'typeorm';
 import { Blog } from './model/blog.entity';
 
@@ -11,7 +10,7 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
     protected blogsRepository: Repository<Blog>,
   ) {}
   async getAllBlogs(
-    query: blogsQueryModel,
+    query: BlogsQueryModel,
     showBanned: boolean,
     userId?: string,
   ) {

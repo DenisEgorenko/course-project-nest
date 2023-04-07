@@ -1,8 +1,8 @@
-import { blogsQueryModel } from '../../models/blogsQueryModel';
+import { BlogsQueryModel } from '../../models/blogsQueryModel';
 
 export abstract class IBlogsQueryRepository {
   abstract getAllBlogs(
-    query: blogsQueryModel,
+    query: BlogsQueryModel,
     showBanned: boolean,
     userId?: string,
   );

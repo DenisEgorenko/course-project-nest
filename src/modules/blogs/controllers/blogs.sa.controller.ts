@@ -14,7 +14,7 @@ import {
   blogsToOutputModel,
   blogsToOutputModelForSA,
 } from '../models/blogsToViewModel';
-import { blogsQueryModel } from '../models/blogsQueryModel';
+import { BlogsQueryModel } from '../models/blogsQueryModel';
 import { BlogsQueryRepository } from '../blogsQuery.repository';
 import { BlogsService } from '../blogs.service';
 import { CommandBus } from '@nestjs/cqrs';
@@ -44,7 +44,7 @@ export class BlogsSaController {
   // Return all User's blogs
   @Get()
   @UseGuards(BasicAuthGuard)
-  async getAllBlogs(@Query() query: blogsQueryModel) {
+  async getAllBlogs(@Query() query: BlogsQueryModel) {
     const result = await this.blogsQueryRepository.getAllBlogs(query, true);
 
     return blogsToOutputModelForSA(query, result.items, result.totalCount);

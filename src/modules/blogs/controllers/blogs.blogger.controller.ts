@@ -33,7 +33,7 @@ import { UpdatePostDto } from './dto/updatePost.dto';
 import { PostsService } from '../../posts/posts.service';
 import { UpdateBlogPostCommand } from '../../posts/use-cases/updateBlogPost.useCase';
 import { DeleteBlogPostCommand } from '../use-cases/deleteBlogPost.useCase';
-import { blogsQueryModel } from '../models/blogsQueryModel';
+import { BlogsQueryModel } from '../models/blogsQueryModel';
 import { UsersService } from '../../users/services/users.service';
 import { CreatePostCommand } from '../../posts/use-cases/createPost.useCase';
 import { commentsToOutputModel } from '../../comments/models/commentsToOutputModel';
@@ -113,7 +113,7 @@ export class BlogsBloggerController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getAllBlogs(
-    @Query() query: blogsQueryModel,
+    @Query() query: BlogsQueryModel,
     @GetCurrentATJwtContext() jwtATPayload: JwtATPayload,
   ) {
     const result = await this.blogsService.getAllBlogs(

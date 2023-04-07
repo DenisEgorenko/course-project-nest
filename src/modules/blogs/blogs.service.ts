@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IBlogsRepository } from './core/abstracts/blogs.repository.abstract';
 import { BlogsBannedUsersQueryModel } from './models/blogsBannedUsersQueryModel';
 import { IBlogsBannedUsersRepository } from './core/abstracts/blogsBannedUsers.repository.abstract';
-import { blogsQueryModel } from './models/blogsQueryModel';
+import { BlogsQueryModel } from './models/blogsQueryModel';
 import { IBlogsQueryRepository } from './core/abstracts/blogsQuery.repository.abstract';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class BlogsService {
   }
 
   async getAllBlogs(
-    query: blogsQueryModel,
+    query: BlogsQueryModel,
     showBanned: boolean,
     userId?: string,
   ) {

@@ -1,12 +1,24 @@
 import { BlogDocument } from '../infrastructure/mongo/model/blogs.schema';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
-export type blogsQueryModel = {
-  pageNumber: number;
-  pageSize: number;
+export class BlogsQueryModel {
+  @IsOptional()
+  @IsString()
+  pageNumber: string;
+  @IsOptional()
+  @IsString()
+  pageSize: string;
+  @IsOptional()
+  @IsString()
   sortBy: string;
-  sortDirection: 'asc' | 'desc';
+  @IsOptional()
+  @IsString()
+  @IsIn(['asc', 'desc'])
+  sortDirection: string;
+  @IsOptional()
+  @IsString()
   searchNameTerm: string;
-};
+}
 
 export type queryResultType = {
   items: BlogDocument[];

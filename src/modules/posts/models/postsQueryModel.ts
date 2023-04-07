@@ -1,6 +1,16 @@
-export type PostsQueryModel = {
-  pageNumber: number;
-  pageSize: number;
+import { IsIn, IsOptional, IsString } from 'class-validator';
+
+export class PostsQueryModel {
+  @IsOptional()
+  @IsString()
+  pageNumber: string;
+  @IsOptional()
+  @IsString()
+  pageSize: string;
+  @IsOptional()
+  @IsString()
   sortBy: string;
-  sortDirection: 'asc' | 'desc';
-};
+  @IsOptional()
+  @IsIn(['asc', 'desc'])
+  sortDirection: string;
+}

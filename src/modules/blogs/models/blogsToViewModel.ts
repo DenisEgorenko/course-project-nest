@@ -1,9 +1,9 @@
 import { BlogDocument } from '../infrastructure/mongo/model/blogs.schema';
-import { blogsQueryModel } from './blogsQueryModel';
+import { BlogsQueryModel } from './blogsQueryModel';
 import { BlogBaseEntity } from '../core/entity/blog.entity';
 
 export const blogsToOutputModel = (
-  query: blogsQueryModel,
+  query: BlogsQueryModel,
   items: BlogDocument[],
   totalCount: number,
 ): blogsOutputModel => {
@@ -21,7 +21,7 @@ export const blogsToOutputModel = (
 };
 
 export const blogsToOutputModelForSA = (
-  query: blogsQueryModel,
+  query: BlogsQueryModel,
   items: BlogDocument[],
   totalCount: number,
 ): blogsOutputModel => {

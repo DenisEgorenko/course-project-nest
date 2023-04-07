@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { blogsQueryModel, queryResultType } from './models/blogsQueryModel';
+import { BlogsQueryModel, queryResultType } from './models/blogsQueryModel';
 import { Model } from 'mongoose';
 import { Sort } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,7 +8,6 @@ import {
   BlogDocument,
   BlogStatics,
 } from './infrastructure/mongo/model/blogs.schema';
-import { blogsToOutputModel } from './models/blogsToViewModel';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -17,7 +16,7 @@ export class BlogsQueryRepository {
     protected blogModel: Model<BlogDocument> & BlogStatics,
   ) {}
   async getAllBlogs(
-    query: blogsQueryModel,
+    query: BlogsQueryModel,
     bannedBlogs?: string[],
     userId?: string,
   ): Promise<queryResultType> {

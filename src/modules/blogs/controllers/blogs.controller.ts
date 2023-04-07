@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from '../blogs.service';
-import { blogsQueryModel } from '../models/blogsQueryModel';
+import { BlogsQueryModel } from '../models/blogsQueryModel';
 import { PostsQueryRepository } from '../../posts/postsQuery.repository';
 import { PostsQueryModel } from '../../posts/models/postsQueryModel';
 import { AuthGuardForLikes } from '../../auth/guards/auth-guard-for-likes.guard';
@@ -29,7 +29,7 @@ export class BlogsController {
   ) {}
 
   @Get()
-  async getAllBlogs(@Query() query: blogsQueryModel) {
+  async getAllBlogs(@Query() query: BlogsQueryModel) {
     const result = await this.blogsService.getAllBlogs(query, false);
 
     return blogsToOutputModel(query, result.items, result.totalCount);
