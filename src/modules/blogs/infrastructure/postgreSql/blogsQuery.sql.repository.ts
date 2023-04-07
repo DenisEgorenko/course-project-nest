@@ -23,56 +23,7 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
 
     const skip: number = pageSize * (pageNumber - 1);
 
-    const totalCount = await this.blogsRepository
-      .createQueryBuilder('blog')
-      .leftJoinAndSelect('blog.user', 'user')
-      .where(
-        new Brackets((qb) => {
-          if (!showBanned) {
-            qb.where('blog.isBanned = :showBanned', {
-              showBanned,
-            });
-          } else {
-            return;
-          }
-        }),
-      )
-      .andWhere(
-        new Brackets((qb) => {
-          const queryArray = [];
-
-          if (query.searchNameTerm) {
-            queryArray.push({
-              field: 'name',
-              name: query.searchNameTerm,
-            });
-          }
-
-          if (queryArray.length) {
-            queryArray.map((value) => {
-              qb.orWhere(`blog.${value.field} ILIKE :${value.field}`, {
-                [`${value.field}`]: `%${value.name}%`,
-              });
-            });
-          } else {
-            return;
-          }
-        }),
-      )
-      .andWhere(
-        new Brackets((qb) => {
-          if (userId) {
-            qb.orWhere('user.id = :userId', {
-              userId,
-            });
-          } else {
-            return;
-          }
-        }),
-      )
-      .getCount();
-
-    const items = await this.blogsRepository
+    const [items, totalCount] = await this.blogsRepository
       .createQueryBuilder('blog')
       .leftJoinAndSelect('blog.user', 'user')
       .where(
@@ -121,11 +72,10 @@ export class BlogsQuerySqlRepository implements IBlogsQueryRepository {
       )
       .select(['blog', 'user.id', 'user.login'])
       .orderBy(`blog.${sortBy}`, sortDirection)
-      .limit(pageSize)
-      .offset(skip)
-      .getMany();
+      .skip(skip)
+      .take(pageSize)
+      .getManyAndCount();
 
-    console.log(items);
     return { items, totalCount };
   }
 }
