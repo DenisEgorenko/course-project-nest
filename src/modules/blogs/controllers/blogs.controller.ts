@@ -62,7 +62,7 @@ export class BlogsController {
       throw new NotFoundException();
     }
 
-    const items = await this.postsService.getAllPosts(query, blogId);
+    const items = await this.postsService.getAllPostsWithBlogId(query, blogId);
 
     return postsToOutputModel(
       query,
