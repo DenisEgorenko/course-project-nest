@@ -139,8 +139,8 @@ export const commentToOutputForBloggerModel = (
     postInfo: {
       id: item.post.id,
       title: item.post.title,
-      blogId: item.blog.id,
-      blogName: item.blog.name,
+      blogId: item.post.blog.id,
+      blogName: item.post.blog.name,
     },
   };
 };
