@@ -35,6 +35,6 @@ export class ResendConfirmationHandler
 
     const updatedUser = await this.usersRepository.save(user);
 
-    await EmailManager.sendRegistrationEmail(updatedUser);
+    EmailManager.sendRegistrationEmail(updatedUser);
   }
 }
