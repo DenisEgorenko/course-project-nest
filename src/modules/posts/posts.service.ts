@@ -16,8 +16,8 @@ export class PostsService {
     return this.postsRepository.getPostById(id);
   }
 
-  async getAllPosts(query: PostsQueryModel) {
-    return this.postsQueryRepository.getAllPosts(query);
+  async getAllPosts(query: PostsQueryModel, blogId?: string) {
+    return this.postsQueryRepository.getAllPosts(query, blogId);
   }
 
   async getAllPostsWithBlogId(query: PostsQueryModel, blogId: string) {
