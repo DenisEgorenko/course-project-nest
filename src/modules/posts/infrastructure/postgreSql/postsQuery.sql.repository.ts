@@ -35,6 +35,14 @@ export class PostsQuerySqlRepository implements IPostsQueryRepository {
           return;
         }
       })
+      .select([
+        'post',
+        'blog',
+        'postLikes',
+        'userBanInfo',
+        'user.id',
+        'user.login',
+      ])
       .orderBy(`post.${sortBy}`, sortDirection)
       .skip(skip)
       .take(pageSize)
