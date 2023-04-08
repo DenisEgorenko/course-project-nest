@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './exceptionFilter/exception.filter';
-import cookieParser from 'cookie-parser';
-// import * as cookieParser from 'cookie-parser';
+// import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
 import { ConfigService } from '@nestjs/config';
 
@@ -15,6 +15,7 @@ async function bootstrap() {
     new ValidationPipe({
       stopAtFirstError: true,
       exceptionFactory: (errors) => {
+        console.log('pipe bad request errors', errors);
         throw new BadRequestException(
           errors.map((e) => ({
             field: e.property,
