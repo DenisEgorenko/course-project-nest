@@ -36,7 +36,10 @@ import { DeleteBlogPostCommand } from '../use-cases/deleteBlogPost.useCase';
 import { BlogsQueryModel } from '../models/blogsQueryModel';
 import { UsersService } from '../../users/services/users.service';
 import { CreatePostCommand } from '../../posts/use-cases/createPost.useCase';
-import { commentsToOutputModel } from '../../comments/models/commentsToOutputModel';
+import {
+  commentsToOutputForBloggerModel,
+  commentsToOutputModel,
+} from '../../comments/models/commentsToOutputModel';
 import { CommentsService } from '../../comments/comments.service';
 import { CommentsQueryModel } from '../../comments/models/commentsQueryModel';
 
@@ -225,7 +228,7 @@ export class BlogsBloggerController {
       jwtATPayload.user.userId,
     );
 
-    return commentsToOutputModel(
+    return commentsToOutputForBloggerModel(
       blogsCommentsQueryModel,
       result.items,
       result.totalCount,
