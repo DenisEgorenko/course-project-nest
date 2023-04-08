@@ -47,7 +47,7 @@ export class RegistrationHandler
 
     const createdUser = await this.usersRepository.save(newUser);
 
-    EmailManager.sendRegistrationEmail(newUser);
+    await EmailManager.sendRegistrationEmail(newUser);
 
     return createdUser;
   }
