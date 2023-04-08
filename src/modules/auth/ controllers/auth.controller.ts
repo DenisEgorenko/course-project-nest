@@ -37,7 +37,7 @@ import { LogoutUserCommand } from '../use-cases/logoutUser.useCase';
 import { RefreshTokenCommand } from '../use-cases/refreshToken.useCase';
 
 @Controller('auth')
-@SkipThrottle()
+// @SkipThrottle()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
